@@ -2,9 +2,6 @@ import torch
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 
-# import ssl
-# ssl._create_default_https_context = ssl._create_unverified_context
-
 # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
 
 precision = "fp32"
@@ -16,9 +13,13 @@ ssd_model = torch.hub.load(
     model_math=precision,
     map_location=torch.device('cpu')
 )
+ssd_model.to('cuda')
 ssd_model.eval()
 
-utils = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_ssd_processing_utils')
+utils = torch.hub.load(
+    'NVIDIA/DeepLearningExamples:torchhub',
+    'nvidia_ssd_processing_utils'
+)
 
 uris = [
     'http://images.cocodataset.org/val2017/000000397133.jpg',
