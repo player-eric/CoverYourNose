@@ -11,6 +11,9 @@ A simple but working script for ensembling a HAAR-based nose detector + a CNN-ba
 
 The pretrained CNN comes from [AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection). It's super light weight (only 1M params). This is a great architecture we can refer to.
 
+## SSDMaskDetector
+
+eval_backbone.py is a working version of this [tutorial](https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/). This is more heavyweight, and would likely need to be served, rather than deployed in the client. I think we could tweak this [model source file](https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/Detection/SSD/src/model.py) and retrain on our datasets. 
 
 ## TrainingPipeline
 
