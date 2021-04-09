@@ -31,7 +31,7 @@ if not len(uris):
     exit()
 
 precision = "fp32"
-threshold = 0.40
+confidence_threshold = 0.40
 
 ssd_model = torch.hub.load(
     'NVIDIA/DeepLearningExamples:torchhub',
@@ -62,7 +62,7 @@ results_per_input = utils.decode_results(detections_batch)
 
 print("\nProcessing...\n")
 
-best_results_per_input = [utils.pick_best(results, threshold) for results in results_per_input]
+best_results_per_input = [utils.pick_best(results, confidence_threshold) for results in results_per_input]
 
 classes_to_labels = utils.get_coco_object_dictionary()
 
@@ -94,4 +94,4 @@ for image_idx in range(len(best_results_per_input)):
     plt.savefig(output_path)
     plt.clf()
 
-    print(f"Saved to {output_path}")
+    print(f"\nSaved to {output_path}")
