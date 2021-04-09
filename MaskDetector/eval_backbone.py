@@ -1,9 +1,10 @@
 import torch
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
-from os import getcwd, listdir, path
+from os import getcwd, listdir, path, mkdir
 from argparse import ArgumentParser
 import re
+from ntpath import basename
 
 # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
 
@@ -15,6 +16,9 @@ args = parser.parse_args()
 
 acceptable_image_suffixes = [".png", ".jpg", ".jpeg"]
 image_filter = rf"^.*({'|'.join(acceptable_image_suffixes)})$"
+
+if not path.isdir("./output"):
+    mkdir("./output")
 
 if args.data_dir:
     uris = [path.join(args.data_dir, i) for i in listdir(args.data_dir)]
@@ -46,20 +50,21 @@ utils = torch.hub.load(
 inputs = [utils.prepare_input(uri) for uri in uris]
 tensor = utils.prepare_tensor(inputs, precision == "fp16")
 
-print(f"Input tensor shape: {tensor.shape}")
+print(f"\nInput tensor shape: {tensor.shape}\n")
 
 with torch.no_grad():
     detections_batch = ssd_model(tensor)
 
-print(f"Detection tensor shape: {detections_batch.shape}")
+for i, detection in enumerate(detections_batch):
+    print(f"Detection tensor {i} shape: {detection.shape}")
 
 results_per_input = utils.decode_results(detections_batch)
 
-print(results_per_input)
+print(len(results_per_input))
 
 best_results_per_input = [utils.pick_best(results, threshold) for results in results_per_input]
 
-print(results_per_input)
+print((results_per_input))
 
 classes_to_labels = utils.get_coco_object_dictionary()
 
@@ -78,4 +83,5 @@ for image_idx in range(len(best_results_per_input)):
         ax.text(x, y, "{} {:.0f}%".format(classes_to_labels[classes[idx] - 1], confidences[idx]*100),
                 bbox=dict(facecolor='white', alpha=0.5))
 
-plt.savefig(f"{getcwd()}/output.png")
+    plt.savefig(f"{getcwd()}/output/{basename(uris[image_idx])}")
+    plt.clf()
