@@ -76,11 +76,11 @@ for image_idx in range(len(best_results_per_input)):
     # ...with detections
     bboxes, classes, confidences = best_results_per_input[image_idx]
 
-    print(f"\nImage {image_idx + 1}:")
-    for [bbox, classification, confidence] in list(zip(bboxes, classes, confidences)):
-        print(f"Bounding box: {bbox}")
-        print(f"Class: {classes_to_labels[classification]}")
-        print(f"Confidence: {confidence}")
+    print(f"\n__ Image {image_idx + 1} __")
+    for i, [bbox, classification, confidence] in enumerate(list(zip(bboxes, classes, confidences))):
+        print(f"\n{i + 1}) Bounding box: {bbox}")
+        print(f"{i + 1}) Class: {classes_to_labels[classification]}")
+        print(f"{i + 1}) Confidence: {confidence}")
 
     for idx in range(len(bboxes)):
         left, bot, right, top = bboxes[idx]
