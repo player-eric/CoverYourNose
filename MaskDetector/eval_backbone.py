@@ -58,15 +58,14 @@ with torch.no_grad():
 for i, detection in enumerate(detections_batch):
     print(f"Detection tensor {i + 1} shape: {detection.shape}")
 
-results_per_input = utils.decode_results(detections_batch)
-
 print("\nProcessing...\n")
 
+results_per_input = utils.decode_results(detections_batch)
 best_results_per_input = [utils.pick_best(results, confidence_threshold) for results in results_per_input]
 
 classes_to_labels = utils.get_coco_object_dictionary()
 
-print("\nPlotting...\n")
+print("Plotting...")
 
 for image_idx in range(len(best_results_per_input)):
     fig, ax = plt.subplots(1)
