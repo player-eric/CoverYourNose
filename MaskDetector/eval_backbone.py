@@ -60,13 +60,16 @@ for i, detection in enumerate(detections_batch):
 
 results_per_input = utils.decode_results(detections_batch)
 
-print(len(results_per_input))
+print("\nProcessing...\n")
+print(f"{len(results_per_input)} results per input")
 
 best_results_per_input = [utils.pick_best(results, threshold) for results in results_per_input]
 
-print((results_per_input))
+print(f"{len(best_results_per_input)} best (threshold={threshold}) results per input")
 
 classes_to_labels = utils.get_coco_object_dictionary()
+
+print("\nPlotting...\n")
 
 for image_idx in range(len(best_results_per_input)):
     fig, ax = plt.subplots(1)
@@ -83,5 +86,8 @@ for image_idx in range(len(best_results_per_input)):
         ax.text(x, y, "{} {:.0f}%".format(classes_to_labels[classes[idx] - 1], confidences[idx]*100),
                 bbox=dict(facecolor='white', alpha=0.5))
 
-    plt.savefig(f"{getcwd()}/output/{basename(uris[image_idx])}")
+    output_path = f"{getcwd()}/output/{basename(uris[image_idx])}"
+    plt.savefig(output_path)
     plt.clf()
+
+    print(f"Saved to {output_path}")
