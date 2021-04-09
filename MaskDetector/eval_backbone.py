@@ -75,7 +75,13 @@ for image_idx in range(len(best_results_per_input)):
     ax.imshow(image)
     # ...with detections
     bboxes, classes, confidences = best_results_per_input[image_idx]
-    print(list(zip(bboxes, classes, confidences)))
+
+    print(f"\nImage {image_idx + 1}:")
+    for [bbox, classification, confidence] in list(zip(bboxes, classes, confidences)):
+        print(f"Bounding box: {bbox}")
+        print(f"Class: {classes_to_labels[classification]}")
+        print(f"Confidence: {confidence}")
+
     for idx in range(len(bboxes)):
         left, bot, right, top = bboxes[idx]
         x, y, w, h = [val * 300 for val in [left, bot, right - left, top - bot]]
