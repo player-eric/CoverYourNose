@@ -1,9 +1,30 @@
 import torch
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
-from os import getcwd
+from os import getcwd, listdir, path
+from argparse import ArgumentParser
+import re
 
 # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
+
+parser = ArgumentParser()
+group = parser.add_mutually_exclusive_group()
+group.add_argument("--data-dir", default="./data")
+parser.add_argument("--absolute-image-uris", nargs="+")
+args = parser.parse_args()
+
+acceptable_image_suffixes = [".png", ".jpg", ".jpeg"]
+image_filter = rf"^.*({'|'.join(acceptable_image_suffixes)})$"
+
+if args.data_dir:
+    uris = [path.join(args.data_dir, i) for i in listdir(args.data_dir)]
+else:
+    uris = args.absolute_image_uris
+
+uris = list(filter(lambda i: re.match(image_filter, i), uris))
+if not len(uris):
+    print(f"{args.data_dir} did not contain any files ending in ({'|'.join(acceptable_image_suffixes)})")
+    exit()
 
 precision = "fp32"
 threshold = 0.40
@@ -22,20 +43,23 @@ utils = torch.hub.load(
     'nvidia_ssd_processing_utils'
 )
 
-uris = [
-    'http://images.cocodataset.org/val2017/000000397133.jpg',
-    'http://images.cocodataset.org/val2017/000000037777.jpg',
-    'http://images.cocodataset.org/val2017/000000252219.jpg'
-]
-
 inputs = [utils.prepare_input(uri) for uri in uris]
 tensor = utils.prepare_tensor(inputs, precision == "fp16")
+
+print(f"Input tensor shape: {tensor.shape}")
 
 with torch.no_grad():
     detections_batch = ssd_model(tensor)
 
+print(f"Detection tensor shape: {detections_batch.shape}")
+
 results_per_input = utils.decode_results(detections_batch)
+
+print(results_per_input)
+
 best_results_per_input = [utils.pick_best(results, threshold) for results in results_per_input]
+
+print(results_per_input)
 
 classes_to_labels = utils.get_coco_object_dictionary()
 
