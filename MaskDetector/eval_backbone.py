@@ -62,13 +62,7 @@ results_per_input = utils.decode_results(detections_batch)
 
 print("\nProcessing...\n")
 
-for i, result in enumerate(results_per_input):
-    print(f"Input {i + 1} has {len(result)} results")
-
 best_results_per_input = [utils.pick_best(results, threshold) for results in results_per_input]
-
-for i, result in enumerate(results_per_input):
-    print(f"Input {i + 1} has {len(result)} qualifying results (threshold={threshold})")
 
 classes_to_labels = utils.get_coco_object_dictionary()
 
@@ -81,6 +75,7 @@ for image_idx in range(len(best_results_per_input)):
     ax.imshow(image)
     # ...with detections
     bboxes, classes, confidences = best_results_per_input[image_idx]
+    print(list(zip(bboxes, classes, confidences)))
     for idx in range(len(bboxes)):
         left, bot, right, top = bboxes[idx]
         x, y, w, h = [val * 300 for val in [left, bot, right - left, top - bot]]
