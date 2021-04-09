@@ -56,16 +56,19 @@ with torch.no_grad():
     detections_batch = ssd_model(tensor)
 
 for i, detection in enumerate(detections_batch):
-    print(f"Detection tensor {i} shape: {detection.shape}")
+    print(f"Detection tensor {i + 1} shape: {detection.shape}")
 
 results_per_input = utils.decode_results(detections_batch)
 
 print("\nProcessing...\n")
-print(f"{len(results_per_input)} results per input")
+
+for i, result in enumerate(results_per_input):
+    print(f"Input {i + 1} has {len(result)} results")
 
 best_results_per_input = [utils.pick_best(results, threshold) for results in results_per_input]
 
-print(f"{len(best_results_per_input)} best (threshold={threshold}) results per input")
+for i, result in enumerate(results_per_input):
+    print(f"Input {i + 1} has {len(result)} qualifying results (threshold={threshold})")
 
 classes_to_labels = utils.get_coco_object_dictionary()
 
