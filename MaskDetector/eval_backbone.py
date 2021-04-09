@@ -6,8 +6,11 @@ from argparse import ArgumentParser
 import re
 from ntpath import basename
 
-# Github Model Source: https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/Detection/SSD#model-overview
-# Tutorial: https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
+"""
+SSD300 Source ~ https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/Detection/SSD/src/model.py
+SSD300 Repo ~ https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/Detection/SSD#model-overview
+Tutorial ~ https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
+"""
 
 parser = ArgumentParser()
 group = parser.add_mutually_exclusive_group()
