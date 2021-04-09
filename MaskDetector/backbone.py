@@ -1,6 +1,7 @@
 import torch
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
+from os import getcwd
 
 # https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/
 
@@ -53,4 +54,4 @@ for image_idx in range(len(best_results_per_input)):
         ax.text(x, y, "{} {:.0f}%".format(classes_to_labels[classes[idx] - 1], confidences[idx]*100),
                 bbox=dict(facecolor='white', alpha=0.5))
 
-plt.savefig("/.output.png")
+plt.savefig(f"{getcwd()}/output.png")
