@@ -11,6 +11,12 @@ from mask_detector.utils.nms import single_class_non_max_suppression
 # import matplotlib.pyplot as plt
 # from keras.models import model_from_json
 
+colors = {
+    "Mask": (0, 255, 0),
+    "Exposed": (255, 165, 0),
+    "NoMask": (255, 0, 0)
+}
+
 use_torch = False
 
 #### imports for a CNN mask detector start ####
@@ -131,37 +137,39 @@ def run_on_image(image,
         #### START process eyes ####
         eye_boxes = m_box.get("eye_boxes")
 
-        assert len(eye_boxes) <= 2
+        # assert len(eye_boxes) <= 2
 
         # if draw_result:
         #     for e_box in eye_boxes:
         #         radius = int(round((e_box.width + e_box.height) * 0.25))
         #         image = cv2.circle(image, e_box.center, radius, (0, 0, 0), 2)
 
+        #### If no eyes detected, we bypass eye validation by setting the
+        ##### threshold to the top of the image, so everything will be validated
         eye_y = max(map(lambda e: e.center[1], eye_boxes)) if len(eye_boxes) else 0
 
-        print(f"Eye Y Threshold: {eye_y}")
+        # print(f"Eye Y Threshold: {eye_y}")
         #### END process eyes ####
 
         #### START process noses ####
         nose_boxes = m_box.get("nose_boxes")
         validated_noses = 0
 
-        if not len(nose_boxes):
-            print("No noses detected.")
+        # if not len(nose_boxes):
+        #     print("No noses detected.")
 
         for n_box in nose_boxes:
             nose_y = n_box.center[1]
-            print(f"Nose Box Center Y: {nose_y}")
+            # print(f"Nose Box Center Y: {nose_y}")
             if nose_y > eye_y:
-                print("Validated.")
+                # print("Validated.")
                 validated_noses += 1
                 if draw_result:
                     image = cv2.ellipse(image, n_box.center, n_box.halves, 0, 0, 360, (0, 0, 0), 4)
                     cv2.putText(image, "Nose", (n_box.x1 + 2, n_box.y1 - 2),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
-            else:
-                print("Rejected.")
+            # else:
+            #     print("Rejected.")
         #### END process noses ####
 
         #### START draw mask boundaries ####
@@ -171,12 +179,12 @@ def run_on_image(image,
         text = id2class[class_id]
 
         if class_id == 1:
-            color = (255, 0, 0)
+            color = colors["NoMask"]
         elif validated_noses > 0:
+            color = colors["Exposed"]
             text = "Exposed"
-            color = (255, 165, 0)
         else:
-            color = (0, 255, 0)
+            color = colors["Mask"]
 
         cv2.rectangle(image, m_box.top_left, m_box.bottom_right, color, 2)
         cv2.putText(image, "%s: %.2f" % (text, conf), (m_box.x1 + 2, m_box.y1 - 2),
