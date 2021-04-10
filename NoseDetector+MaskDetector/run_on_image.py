@@ -88,7 +88,7 @@ def run_on_image(image,
                                                  )
     #### END mask detector inference ####
 
-    #### START compute mask boundary ####
+    #### START convert mask bbox, find internal nose and eye bboxes ####
     mask_boxes = []
 
     for idx in keep_idxs:
@@ -125,7 +125,7 @@ def run_on_image(image,
         #### END get potential nose and eye positions ####
 
         output_info.append([class_id, conf, *m_box.top_left, *m_box.bottom_right])
-    #### END compute mask boundary ####
+    #### END convert mask bbox, find internal nose and eye bboxes ####
 
     for m_box in mask_boxes:
         #### START process eyes ####
