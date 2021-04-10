@@ -108,12 +108,12 @@ def run_on_image(image,
         x2 = int(x2 * width)
         y2 = int(y2 * height)
 
-        m_box = bbox_from_two_points("Mask", x1, y1, x2, y2, (width, height))
-        m_box.set("class_id", class_id)
-        m_box.set("conf", conf)
-        mask_boxes.append(m_box)
+        mask_box = bbox_from_two_points("Mask", x1, y1, x2, y2, (width, height))
+        mask_box.set("class_id", class_id)
+        mask_box.set("conf", conf)
+        mask_boxes.append(mask_box)
 
-        faceROI = m_box.crop(image)
+        faceROI = mask_box.crop(image)
         # plt.imshow(faceROI)
         # plt.show()
 
@@ -122,20 +122,20 @@ def run_on_image(image,
         #### larger minNeighbors -> less false positive
         #### These simple nose and eye detectors are not working perfectly, I'll try to improve them later
         nose_positions = nose_detector(faceROI, minNeighbors=10)
-        nose_boxes = convert_to_global("Nose", nose_positions, m_box, width, height)
-        m_box.set("nose_boxes", nose_boxes)
+        nose_boxes = convert_to_global("Nose", nose_positions, mask_box, width, height)
+        mask_box.set("nose_boxes", nose_boxes)
 
         eye_positions = eye_detector(faceROI, minNeighbors=8)
-        eye_boxes = convert_to_global("Eye", eye_positions, m_box, width, height)
-        m_box.set("eye_boxes", eye_boxes)
+        eye_boxes = convert_to_global("Eye", eye_positions, mask_box, width, height)
+        mask_box.set("eye_boxes", eye_boxes)
         #### END get potential nose and eye positions ####
 
-        output_info.append([class_id, conf, *m_box.top_left, *m_box.bottom_right])
+        output_info.append([class_id, conf, *mask_box.top_left, *mask_box.bottom_right])
     #### END convert mask bbox, find internal nose and eye bboxes ####
 
-    for m_box in mask_boxes:
+    for mask_box in mask_boxes:
         #### START process eyes ####
-        eye_boxes = m_box.get("eye_boxes")
+        eye_boxes = mask_box.get("eye_boxes")
 
         # assert len(eye_boxes) <= 2
 
@@ -152,7 +152,7 @@ def run_on_image(image,
         #### END process eyes ####
 
         #### START process noses ####
-        nose_boxes = m_box.get("nose_boxes")
+        nose_boxes = mask_box.get("nose_boxes")
         validated_noses = 0
 
         # if not len(nose_boxes):
@@ -173,8 +173,8 @@ def run_on_image(image,
         #### END process noses ####
 
         #### START draw mask boundaries ####
-        class_id = m_box.get("class_id")
-        conf = m_box.get("conf")
+        class_id = mask_box.get("class_id")
+        conf = mask_box.get("conf")
 
         text = id2class[class_id]
 
@@ -186,8 +186,8 @@ def run_on_image(image,
         else:
             color = colors["Mask"]
 
-        cv2.rectangle(image, m_box.top_left, m_box.bottom_right, color, 2)
-        cv2.putText(image, "%s: %.2f" % (text, conf), (m_box.x1 + 2, m_box.y1 - 2),
+        cv2.rectangle(image, mask_box.top_left, mask_box.bottom_right, color, 2)
+        cv2.putText(image, "%s: %.2f" % (text, conf), (mask_box.x1 + 2, mask_box.y1 - 2),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
         #### END draw mask boundaries ####
 
