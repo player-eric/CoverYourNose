@@ -16,8 +16,7 @@ class BoundingBox:
         :param clip: an optional (img_width_px, img_height_px) tuple used to, if need be, constrain this rectangle
         """
         self.name = name
-        self.class_id = None
-        self.conf = None
+        self.dict = {}
 
         if clip is not None:
             # clip the coordinate, avoid the value exceed the image boundary.
@@ -32,17 +31,17 @@ class BoundingBox:
         self.x2 = x2
         self.y2 = y2
 
-    def set_class_id(self, class_id):
+    def set(self, attribute, value):
         """
-        Records the class id of this bounding box.
+        Records arbitrary property of this bounding box.
         """
-        self.class_id = class_id
+        self.dict[attribute] = value
 
-    def set_confidence(self, conf):
+    def get(self, attribute):
         """
-        Records the confidence associated with this bounding box.
+        Retrieve arbitrary property of this bounding box.
         """
-        self.conf = conf
+        return self.dict[attribute]
 
     @property
     def width(self):
@@ -98,7 +97,13 @@ class BoundingBox:
         return False
 
     def crop(self, input_image):
-        return input_image[self.x1:self.x2, self.y1:self.y2]
+        return input_image[self.y1:self.y2, self.x1:self.x2]
+
+    def to_global_coordinates(self, child: 'BoundingBox'):
+        child.x1 += self.x1
+        child.y1 += self.y1
+        child.x2 += self.x1
+        child.y2 += self.y1
 
     def __repr__(self):
         return f"@{self.name}: TL ({self.x1}, {self.y1}) => BR ({self.x2}, {self.y2}) [{self.width} x {self.height}]"
