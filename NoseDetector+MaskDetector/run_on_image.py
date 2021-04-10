@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from bounding_box import bbox_from_two_points
+from bounding_box import bbox_from_two_points, bbox_from_anchor_dims
 from eye_detector.simple_eye_detector import eye_detector
 from mask_detector.models.tensorflow_loader import load_tf_model, tf_inference
 from mask_detector.utils.anchor_decode import decode_bbox
@@ -95,16 +95,16 @@ def run_on_image(image,
         m_box.set("conf", conf)
         mask_boxes.append(m_box)
 
-        # plt.imshow(m_box.crop(image))
+        face_region = m_box.crop(image)
+        # plt.imshow(face_region)
         # plt.show()
 
-        localize = m_box, width, height
         #### START get potential nose and eye positions ####
         #### parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         #### larger minNeighbors -> less false positive
         #### This simple nose detector is not working perfectly, I'll try to improve it later
-        m_box.set("nose_boxes", nose_detector(image, minNeighbors=10, localize=localize))
-        m_box.set("eye_boxes", eye_detector(image, minNeighbors=8, localize=localize))
+        m_box.set("nose_boxes", convert("Nose", nose_detector(face_region, minNeighbors=10), m_box, width, height))
+        m_box.set("eye_boxes", convert("Eye", eye_detector(face_region, minNeighbors=8), m_box, width, height))
         #### END get potential nose and eye positions ####
 
         output_info.append([class_id, conf, *m_box.top_left, *m_box.bottom_right])
@@ -163,3 +163,13 @@ def run_on_image(image,
     #### END draw mask boundaries ####
 
     return output_info, image
+
+
+def convert(name, positions, mask_box, width, height):
+    bboxes = []
+    for x, y, w, h in positions:
+        bbox = bbox_from_anchor_dims(name, x, y, w, h, (width, height))
+        mask_box.to_global_coordinates(bbox)
+        assert mask_box.contains(bbox)
+        bboxes.append(bbox)
+    return bboxes
