@@ -71,7 +71,7 @@ class BoundingBox:
     def intersects_one(self, other: 'BoundingBox') -> bool:
         return not (
                 self.x1 > other.x2 or
-                self.x2 < other.y1 or
+                self.x2 < other.x1 or
                 self.y1 > other.y2 or
                 self.y2 < other.y1
         )
@@ -136,3 +136,46 @@ def convert_to_global(name: str, positions: List[Tuple[int, int, int, int]], mas
         bboxes.append(bbox)
     assert all(mask_box.contains_many(bboxes))
     return bboxes
+
+
+if __name__ == "__main__":
+    a = BoundingBox("a", 50, 50, 250, 250)
+
+    b = BoundingBox("b", 0, 0, 50, 50)
+    # Intersection returns true even if intersection is only a single line (just borders overlap)
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert not (a.contains_one(b) or b.contains_one(a))
+
+    b = BoundingBox("b", 0, 0, 49, 49)
+    assert not (a.intersects_one(b) or b.intersects_one(a))
+    assert not (a.contains_one(b) or b.contains_one(a))
+
+    b = BoundingBox("b", 0, 75, 75, 100)
+    # Left intersection
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert not (a.contains_one(b) or b.contains_one(a))
+
+    b = BoundingBox("b", 100, 75, 300, 200)
+    # Right intersection
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert not (a.contains_one(b) or b.contains_one(a))
+
+    b = BoundingBox("b", 75, 0, 200, 200)
+    # Top intersection
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert not (a.contains_one(b) or b.contains_one(a))
+
+    b = BoundingBox("b", 75, 200, 200, 300)
+    # Bottom intersection
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert not (a.contains_one(b) or b.contains_one(a))
+
+    b = BoundingBox("b", 50, 50, 250, 250)
+    # When a and b are the same box
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert a.contains_one(b) and b.contains_one(a)
+
+    b = BoundingBox("b", 51, 51, 249, 249)
+    # When b is a true child of a
+    assert a.intersects_one(b) and b.intersects_one(a)
+    assert a.contains_one(b) and not b.contains_one(a)
