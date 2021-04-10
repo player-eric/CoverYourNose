@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple, Any, Optional
 
 
 class BoundingBox:
@@ -6,7 +6,7 @@ class BoundingBox:
     A utility class for bounding boxes.
     """
 
-    def __init__(self, name, x1, y1, x2, y2, clip=None):
+    def __init__(self, name: str, x1: int, y1: int, x2: int, y2: int, clip: Optional[Tuple[int, int]] = None):
         """
         :param name: a name to identify the purpose of this bounding box in __repr__
         :param x1: the top left x coordinate
@@ -31,44 +31,44 @@ class BoundingBox:
         self.x2 = x2
         self.y2 = y2
 
-    def set(self, attribute, value):
+    def set(self, attribute: str, value: Any) -> None:
         """
         Records arbitrary property of this bounding box.
         """
         self.dict[attribute] = value
 
-    def get(self, attribute):
+    def get(self, attribute: str) -> Any:
         """
         Retrieve arbitrary property of this bounding box.
         """
         return self.dict[attribute]
 
     @property
-    def width(self):
+    def width(self) -> int:
         return self.x2 - self.x1
 
     @property
-    def height(self):
+    def height(self) -> int:
         return self.y2 - self.y1
 
     @property
-    def top_left(self):
+    def top_left(self) -> Tuple[int, int]:
         return self.x1, self.y1
 
     @property
-    def bottom_right(self):
+    def bottom_right(self) -> Tuple[int, int]:
         return self.x2, self.y2
 
     @property
-    def center(self):
+    def center(self) -> Tuple[int, int]:
         hw, hh = self.halves
         return self.x1 + hw, self.y1 + hh
 
     @property
-    def halves(self):
+    def halves(self) -> Tuple[int, int]:
         return self.width // 2, self.height // 2
 
-    def intersects(self, other: 'BoundingBox'):
+    def intersects_one(self, other: 'BoundingBox') -> bool:
         return not (
                 self.x1 > other.x2 or
                 self.x2 < other.y1 or
@@ -76,13 +76,10 @@ class BoundingBox:
                 self.y2 < other.y1
         )
 
-    def intersects_any(self, others: List['BoundingBox']):
-        for o in others:
-            if self.intersects(o):
-                return True
-        return False
+    def intersects_many(self, others: List['BoundingBox']) -> List[bool]:
+        return [self.intersects_one(o) for o in others]
 
-    def contains(self, other: 'BoundingBox'):
+    def contains_one(self, other: 'BoundingBox') -> bool:
         return (
                 self.x1 <= other.x1 and
                 self.y1 <= other.y1 and
@@ -90,16 +87,13 @@ class BoundingBox:
                 self.y2 >= other.y2
         )
 
-    def contains_any(self, others: List['BoundingBox']):
-        for o in others:
-            if self.contains(o):
-                return True
-        return False
+    def contains_many(self, others: List['BoundingBox']) -> List[bool]:
+        return [self.contains_one(o) for o in others]
 
     def crop(self, input_image):
         return input_image[self.y1:self.y2, self.x1:self.x2]
 
-    def to_global_coordinates(self, child: 'BoundingBox'):
+    def to_global_coordinates(self, child: 'BoundingBox') -> None:
         child.x1 += self.x1
         child.y1 += self.y1
         child.x2 += self.x1
@@ -109,7 +103,7 @@ class BoundingBox:
         return f"@{self.name}: TL ({self.x1}, {self.y1}) => BR ({self.x2}, {self.y2}) [{self.width} x {self.height}]"
 
 
-def bbox_from_two_points(name, x1, y1, x2, y2, clip=None):
+def bbox_from_two_points(name: str, x1: int, y1: int, x2: int, y2: int, clip: Optional[Tuple[int, int]] = None):
     """
     Instantiates a BoundingBox from the given two points.
     See BoundingBox docstring for other param description.
@@ -117,7 +111,7 @@ def bbox_from_two_points(name, x1, y1, x2, y2, clip=None):
     return BoundingBox(name, x1, y1, x2, y2, clip)
 
 
-def bbox_from_anchor_dims(name, x, y, w, h, clip=None):
+def bbox_from_anchor_dims(name: str, x: int, y: int, w: int, h: int, clip: Optional[Tuple[int, int]] = None):
     """
     Instantiates a BoundingBox from a top left anchor point and the rectangle's desired width and height.
     See BoundingBox docstring for other param description.
@@ -129,7 +123,8 @@ def bbox_from_anchor_dims(name, x, y, w, h, clip=None):
     return BoundingBox(name, x1, y1, x2, y2, clip)
 
 
-def convert_to_global(name, positions, mask_box, width, height):
+def convert_to_global(name: str, positions: List[Tuple[int, int, int, int]], mask_box: BoundingBox, width: int,
+                      height: int):
     """
     Convert all of the x, y, w, h positions, where x, y are in local
     coordinates, to BoundingBox instances with global image coordinates.
@@ -138,6 +133,6 @@ def convert_to_global(name, positions, mask_box, width, height):
     for x, y, w, h in positions:
         bbox = bbox_from_anchor_dims(name, x, y, w, h, (width, height))
         mask_box.to_global_coordinates(bbox)
-        assert mask_box.contains(bbox)
         bboxes.append(bbox)
+    assert all(mask_box.contains_many(bboxes))
     return bboxes
