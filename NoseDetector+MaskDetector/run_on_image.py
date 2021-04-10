@@ -113,19 +113,19 @@ def run_on_image(image,
         m_box.set("conf", conf)
         mask_boxes.append(m_box)
 
-        face_region = m_box.crop(image)
-        # plt.imshow(face_region)
+        faceROI = m_box.crop(image)
+        # plt.imshow(faceROI)
         # plt.show()
 
         #### START get potential nose and eye positions ####
         #### parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         #### larger minNeighbors -> less false positive
         #### These simple nose and eye detectors are not working perfectly, I'll try to improve them later
-        nose_positions = nose_detector(face_region, minNeighbors=10)
+        nose_positions = nose_detector(faceROI, minNeighbors=10)
         nose_boxes = convert_to_global("Nose", nose_positions, m_box, width, height)
         m_box.set("nose_boxes", nose_boxes)
 
-        eye_positions = eye_detector(face_region, minNeighbors=8)
+        eye_positions = eye_detector(faceROI, minNeighbors=8)
         eye_boxes = convert_to_global("Eye", eye_positions, m_box, width, height)
         m_box.set("eye_boxes", eye_boxes)
         #### END get potential nose and eye positions ####
