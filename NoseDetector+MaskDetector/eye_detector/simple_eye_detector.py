@@ -18,5 +18,5 @@ def nose_detector(image, minNeighbors=8, bbox=None):
     nose = nose_cascade.detectMultiScale3(image, minNeighbors=minNeighbors, outputRejectLevels=True)
     # print(nose)
     nose_positions = nose[0]
-    
+
     return nose_positions

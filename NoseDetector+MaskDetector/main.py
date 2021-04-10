@@ -15,7 +15,8 @@ if __name__ == "__main__":
     parser.add_argument('--imgs-path', type=str, help='path to directory of input images', default='./images')
     parser.add_argument('--video-path', type=str, default='0', help='path to your video, `0` means to use camera.')
     parser.add_argument('--show-results', action="store_true", help='whether to show the resulting images')
-    parser.add_argument('--save-results', action="store_true" , help='whether to save the resulting images to output dir')
+    parser.add_argument('--save-results', action="store_true",
+                        help='whether to save the resulting images to output dir')
     args = parser.parse_args()
 
     if args.img_mode:
