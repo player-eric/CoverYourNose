@@ -102,9 +102,14 @@ def run_on_image(image,
         #### START get potential nose and eye positions ####
         #### parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         #### larger minNeighbors -> less false positive
-        #### This simple nose detector is not working perfectly, I'll try to improve it later
-        m_box.set("nose_boxes", convert("Nose", nose_detector(face_region, minNeighbors=10), m_box, width, height))
-        m_box.set("eye_boxes", convert("Eye", eye_detector(face_region, minNeighbors=8), m_box, width, height))
+        #### These simple nose and eye detectors are not working perfectly, I'll try to improve them later
+        nose_positions = nose_detector(face_region, minNeighbors=10)
+        nose_boxes = convert("Nose", nose_positions, m_box, width, height)
+        m_box.set("nose_boxes", nose_boxes)
+
+        eye_positions = eye_detector(face_region, minNeighbors=8)
+        eye_boxes = convert("Eye", eye_positions, m_box, width, height)
+        m_box.set("eye_boxes", eye_boxes)
         #### END get potential nose and eye positions ####
 
         output_info.append([class_id, conf, *m_box.top_left, *m_box.bottom_right])
@@ -121,7 +126,7 @@ def run_on_image(image,
         #         radius = int(round((e_box.width + e_box.height) * 0.25))
         #         image = cv2.circle(image, e_box.center, radius, (0, 0, 0), 2)
 
-        eye_y = max(eye_boxes, key=lambda e: e.center[1]).center[1] if len(eye_boxes) else 0
+        eye_y = max(map(lambda e: e.center[1], eye_boxes)) if len(eye_boxes) else 0
 
         print(f"Eye Y Threshold: {eye_y}")
 
