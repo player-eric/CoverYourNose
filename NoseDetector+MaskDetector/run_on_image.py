@@ -165,21 +165,21 @@ def run_on_image(image,
         #### END process noses ####
 
         #### START draw mask boundaries ####
-        contains_nose = validated_noses > 0
         class_id = m_box.get("class_id")
-        contains_mask = class_id == 0
+        conf = m_box.get("conf")
 
         text = id2class[class_id]
-        if not contains_mask:
+
+        if class_id == 1:
             color = (255, 0, 0)
-        elif contains_nose:
-            text = "+Nose"
-            color = (0, 0, 255)
+        elif validated_noses > 0:
+            text = "Exposed"
+            color = (255, 165, 0)
         else:
             color = (0, 255, 0)
 
         cv2.rectangle(image, m_box.top_left, m_box.bottom_right, color, 2)
-        cv2.putText(image, "%s: %.2f" % (text, m_box.get("conf")), (m_box.x1 + 2, m_box.y1 - 2),
+        cv2.putText(image, "%s: %.2f" % (text, conf), (m_box.x1 + 2, m_box.y1 - 2),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
         #### END draw mask boundaries ####
 
