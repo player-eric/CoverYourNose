@@ -127,3 +127,17 @@ def bbox_from_anchor_dims(name, x, y, w, h, clip=None):
     x2 = x + w
     y2 = y + h
     return BoundingBox(name, x1, y1, x2, y2, clip)
+
+
+def convert_to_global(name, positions, mask_box, width, height):
+    """
+    Convert all of the x, y, w, h positions, where x, y are in local
+    coordinates, to BoundingBox instances with global image coordinates.
+    """
+    bboxes = []
+    for x, y, w, h in positions:
+        bbox = bbox_from_anchor_dims(name, x, y, w, h, (width, height))
+        mask_box.to_global_coordinates(bbox)
+        assert mask_box.contains(bbox)
+        bboxes.append(bbox)
+    return bboxes

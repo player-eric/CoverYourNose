@@ -26,7 +26,7 @@ if __name__ == "__main__":
             imgPath = args.img_path
             img = cv2.imread(imgPath)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            output_info, image = run_on_image(img, input_size=(260, 260))
+            output_info, image = run_on_image(img)
             if show_results:
                 Image.fromarray(image).show()
             if save_results:
@@ -36,7 +36,7 @@ if __name__ == "__main__":
                 imgPath = args.imgs_path + img_name
                 img = cv2.imread(imgPath)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                output_info, image = run_on_image(img, input_size=(260, 260))
+                output_info, image = run_on_image(img)
                 if show_results:
                     Image.fromarray(image).show()
                 if save_results:

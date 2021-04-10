@@ -1,44 +1,55 @@
 import cv2
 import numpy as np
 
-from bounding_box import bbox_from_two_points, bbox_from_anchor_dims
-from eye_detector.simple_eye_detector import eye_detector
+from bounding_box import bbox_from_two_points, convert_to_global
+from mask_detector.models.torch_loader import load_torch_model, torch_inference
 from mask_detector.models.tensorflow_loader import load_tf_model, tf_inference
 from mask_detector.utils.anchor_decode import decode_bbox
 from mask_detector.utils.anchor_generator import generate_anchors
 from mask_detector.utils.nms import single_class_non_max_suppression
 
 # import matplotlib.pyplot as plt
-
 # from keras.models import model_from_json
+
+use_torch = False
 
 #### imports for a CNN mask detector start ####
 #### these can be later replaced by model trained by ourselves ####
+if not use_torch:
+    sess, graph = load_tf_model('mask_detector/models/face_mask_detection.pb')
+else:
+    # model = load_torch_model('mask_detector/models/face_mask_detection.pth')
+    model = load_torch_model('mask_detector/models/model360.pth')
 
-sess, graph = load_tf_model('mask_detector/models/face_mask_detection.pb')
 # anchor configuration
-feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
+if not use_torch:
+    feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
+    input_size = (260, 260)
+else:
+    feature_map_sizes = [[45, 45], [23, 23], [12, 12], [6, 6], [4, 4]]
+    input_size = (360, 360)
+
 anchor_sizes = [[0.04, 0.056], [0.08, 0.11], [0.16, 0.22], [0.32, 0.45], [0.64, 0.72]]
 anchor_ratios = [[1, 0.62, 0.42]] * 5
+
 # generate anchors
 anchors = generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios)
+
 # for inference , the batch size is 1, the model output shape is [1, N, 4],
 # so we expand dim for anchors to [1, anchor_num, 4]
 anchors_exp = np.expand_dims(anchors, axis=0)
 id2class = {0: 'Mask', 1: 'NoMask'}
-
 #### imports for a CNN mask detector end ####
 
-#### imports for a HAAR cascade based nose detector start ####
+#### imports for HAAR cascade based nose and eye detectors start ####
 from nose_detector.simple_nose_detector import nose_detector
+from eye_detector.simple_eye_detector import eye_detector
+#### imports for HAAR cascade based nose and eye detectors end ####
 
-
-#### imports for a HAAR cascade based nose detector end ####
 
 def run_on_image(image,
                  conf_thresh=0.5,
                  iou_thresh=0.4,
-                 input_size=(160, 160),
                  draw_result=True,
                  ):
     """
@@ -46,20 +57,21 @@ def run_on_image(image,
     :param image: 3D numpy array of image
     :param conf_thresh: the min threshold of classification probability.
     :param iou_thresh: the IOU threshold of NMS
-    :param input_size: the model input size.
     :param draw_result: whether to draw bounding box to the image.
     # :param show_result: whether to display the image.
     :return:
     """
     #### START mask detector inference ####
-    # image = np.copy(image)
     output_info = []
     height, width, _ = image.shape
     image_resized = cv2.resize(image, input_size)
     image_np = image_resized / 255.0  # normalize
     image_exp = np.expand_dims(image_np, axis=0)
 
-    y_bboxes_output, y_cls_output = tf_inference(sess, graph, image_exp)
+    if not use_torch:
+        y_bboxes_output, y_cls_output = tf_inference(sess, graph, image_exp)
+    else:
+        y_bboxes_output, y_cls_output = torch_inference(model, image_exp.transpose((0, 3, 1, 2)))
 
     # remove the batch dimension, for batch is always 1 for inference.
     y_bboxes = decode_bbox(anchors_exp, y_bboxes_output)[0]
@@ -104,19 +116,19 @@ def run_on_image(image,
         #### larger minNeighbors -> less false positive
         #### These simple nose and eye detectors are not working perfectly, I'll try to improve them later
         nose_positions = nose_detector(face_region, minNeighbors=10)
-        nose_boxes = convert("Nose", nose_positions, m_box, width, height)
+        nose_boxes = convert_to_global("Nose", nose_positions, m_box, width, height)
         m_box.set("nose_boxes", nose_boxes)
 
         eye_positions = eye_detector(face_region, minNeighbors=8)
-        eye_boxes = convert("Eye", eye_positions, m_box, width, height)
+        eye_boxes = convert_to_global("Eye", eye_positions, m_box, width, height)
         m_box.set("eye_boxes", eye_boxes)
         #### END get potential nose and eye positions ####
 
         output_info.append([class_id, conf, *m_box.top_left, *m_box.bottom_right])
     #### END compute mask boundary ####
 
-    #### END draw mask boundaries ####
     for m_box in mask_boxes:
+        #### START process eyes ####
         eye_boxes = m_box.get("eye_boxes")
 
         assert len(eye_boxes) <= 2
@@ -129,7 +141,9 @@ def run_on_image(image,
         eye_y = max(map(lambda e: e.center[1], eye_boxes)) if len(eye_boxes) else 0
 
         print(f"Eye Y Threshold: {eye_y}")
+        #### END process eyes ####
 
+        #### START process noses ####
         nose_boxes = m_box.get("nose_boxes")
         validated_noses = 0
 
@@ -148,7 +162,9 @@ def run_on_image(image,
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
             else:
                 print("Rejected.")
+        #### END process noses ####
 
+        #### START draw mask boundaries ####
         contains_nose = validated_noses > 0
         class_id = m_box.get("class_id")
         contains_mask = class_id == 0
@@ -165,16 +181,6 @@ def run_on_image(image,
         cv2.rectangle(image, m_box.top_left, m_box.bottom_right, color, 2)
         cv2.putText(image, "%s: %.2f" % (text, m_box.get("conf")), (m_box.x1 + 2, m_box.y1 - 2),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, color)
-    #### END draw mask boundaries ####
+        #### END draw mask boundaries ####
 
     return output_info, image
-
-
-def convert(name, positions, mask_box, width, height):
-    bboxes = []
-    for x, y, w, h in positions:
-        bbox = bbox_from_anchor_dims(name, x, y, w, h, (width, height))
-        mask_box.to_global_coordinates(bbox)
-        assert mask_box.contains(bbox)
-        bboxes.append(bbox)
-    return bboxes

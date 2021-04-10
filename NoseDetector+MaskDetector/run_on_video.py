@@ -26,7 +26,6 @@ def run_on_video(video_path, output_video_name, conf_thresh):
             run_on_image(img_raw,
                       conf_thresh,
                       iou_thresh=0.5,
-                      input_size=(260, 260),
                       draw_result=True,
                       #show_result=False
                       )
