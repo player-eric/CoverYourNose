@@ -12,6 +12,9 @@ A simple but working script for ensembling a HAAR-based nose detector + a CNN-ba
 The pretrained CNN comes from [AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection). It's super light weight (only 1M params). This is a great architecture we can refer to.
 The local copy of the model can be found [here](NoseDetector+MaskDetector/MainModel.py).
 
+May also consider [this tutorial](https://www.pyimagesearch.com/2017/04/10/detect-eyes-nose-lips-jaw-dlib-opencv-python/)
+as an alternative to HAAR.
+
 ## SSDMaskDetector
 
 eval_backbone.py is a working version of this [tutorial](https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/). This is more heavyweight, and would likely need to be served, rather than deployed in the client. I think we could tweak this [model source file](SSDMaskDetector/SSD300.py) and retrain on our datasets. 
