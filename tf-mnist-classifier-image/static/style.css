@@ -1,0 +1,63 @@
+body {
+	max-width: 1100px;
+	margin: auto;
+	overflow: hidden;
+	padding: 0 2rem;
+	margin-top: 6rem;
+	margin-bottom: 3rem;
+}
+
+.container {
+	text-align: center;
+}
+
+#headline-1 {
+	font-size: xx-large;
+	font-weight: bolder;
+}
+
+#headline-2 {
+	font-size: x-large;
+	font-weight: bold;
+}
+
+#result-image {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	width: 500px;
+	height: 500px;
+}
+
+#upload-label {
+	font-size: xx-large;
+	font-weight: bolder;
+}
+
+#imageUpload {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+#imageUpload + label {
+	font-size: 1.25em;
+	font-weight: 700;
+	display: inline-block;
+}
+
+#imageUpload + label {
+	cursor: pointer;
+}
+
+#imageUpload:focus + label {
+	outline: 1px dotted #000;
+	outline: -webkit-focus-ring-color auto 5px;
+}
+
+#imageupload-icon {
+	font-size: 50px;
+}
