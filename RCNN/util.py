@@ -16,7 +16,7 @@ def input_to_device(imgs, annotations):
 
 
 def model_to_device(model):
-    model.to_device(device)
+    model.to(device)
 
 
 def plot_image(img_tensor, annotation, save=True):
