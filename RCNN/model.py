@@ -2,9 +2,10 @@ import torch
 from torchvision.models.detection import faster_rcnn, fasterrcnn_resnet50_fpn
 
 model_output_name = "rcnn.pt"
+num_classes = 3
 
 
-def get_model_instance_segmentation(num_classes):
+def get_model_instance_segmentation():
     # load an instance segmentation model pre-trained pre-trained on COCO
     model = fasterrcnn_resnet50_fpn(pretrained=True)
     # get number of input features for the classifier
@@ -19,9 +20,7 @@ def save_model(model):
     torch.save(model.state_dict(), model_output_name)
 
 
-def load_model_for_prediction(num_classes, device):
-    model = get_model_instance_segmentation(num_classes)
+def load_model():
+    model = get_model_instance_segmentation()
     model.load_state_dict(torch.load(model_output_name))
-    model.eval()
-    model.to(device)
     return model
