@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--num-epochs", type=int, nargs=1, default=25)
     parser.add_argument("--batch-size", type=int, nargs=1, default=4)
-    parser.add_argument("--single-eval", type=bool, action="store_true", default=True)
+    parser.add_argument("--single-eval", action="store_true", default=True)
 
     args = parser.parse_args()
 
