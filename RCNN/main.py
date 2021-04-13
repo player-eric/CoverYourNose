@@ -3,8 +3,8 @@ import math
 import torch
 from torchvision import transforms
 
-from RCNN.Kaggle1Dataset import Kaggle1Dataset
-from RCNN.model import get_model_instance_segmentation, save_model
+from Kaggle1Dataset import Kaggle1Dataset
+from model import get_model_instance_segmentation, save_model
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
