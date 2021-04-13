@@ -13,8 +13,7 @@ def train(num_epochs):
     model_to_device(model)
 
     params = [p for p in model.parameters() if p.requires_grad]
-    print("Trainable parameters:")
-    print(params)
+    print(f"{len(params)} of {len(model.parameters())} are trainable.")
 
     optimizer = torch.optim.SGD(
         params=params,
@@ -95,11 +94,11 @@ if __name__ == "__main__":
             predictions = model(imgs)
 
             print("Saving prediction image...", end="")
-            plot_image(imgs[2], predictions[2], save=True)
+            plot_image(imgs[2], predictions[2], prediction=True, save=True)
             print("Done.")
 
             print("Saving ground truth image...", end="")
-            plot_image(imgs[2], annotations[2], save=True)
+            plot_image(imgs[2], annotations[2], prediction=False, save=True)
             print("Done.")
 
             break

@@ -19,7 +19,7 @@ def model_to_device(model):
     model.to(device)
 
 
-def plot_image(img_tensor, annotation, save=True):
+def plot_image(img_tensor, annotation, prediction, save=True):
     fig, ax = plt.subplots(1)
     img = img_tensor.cpu().data
 
@@ -43,6 +43,6 @@ def plot_image(img_tensor, annotation, save=True):
         ax.add_patch(rect)
 
     if save:
-        plt.savefig(f"./output/prediction_{math.floor(time())}.png")
+        plt.savefig(f"./output/{'prediction' if prediction else 'true'}_{math.floor(time())}.png")
 
     plt.show()
