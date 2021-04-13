@@ -1,3 +1,5 @@
+import math
+
 import torch
 from torchvision import transforms
 
@@ -5,6 +7,9 @@ from RCNN.Kaggle1Dataset import Kaggle1Dataset
 from RCNN.model import get_model_instance_segmentation, save_model
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+
+import os
+from time import time
 
 
 def train(num_epochs):
@@ -18,6 +23,8 @@ def train(num_epochs):
     )
 
     for epoch in range(num_epochs):
+        print(f"Beginning epoch {epoch + 1} of {num_epochs}.")
+
         model.train()
 
         epoch_loss = 0
@@ -35,7 +42,7 @@ def train(num_epochs):
         print(epoch_loss)
 
 
-def plot_image(img_tensor, annotation):
+def plot_image(img_tensor, annotation, save=True):
     fig, ax = plt.subplots(1)
     img = img_tensor.cpu().data
 
@@ -58,25 +65,42 @@ def plot_image(img_tensor, annotation):
         # Add the patch to the Axes
         ax.add_patch(rect)
 
+    if save:
+        plt.savefig(f"./output/prediction_{math.floor(time())}.png")
+
     plt.show()
 
 
 if __name__ == "__main__":
+    if not os.path.isdir("./output"):
+        os.mkdir("./output")
+
+    print("Instantiating dataset...", end="")
     dataset = Kaggle1Dataset(
         transforms=transforms.Compose([transforms.ToTensor()])
     )
+    print("Done.")
+
+    print("Instantiating data loader...", end="")
     data_loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=4,
         collate_fn=dataset.collate_fn
     )
+    print("Done.")
 
+    print("Instantiating model...", end="")
     model = get_model_instance_segmentation(len(dataset.classes))
+    print("Done.")
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    print(f"Device: {device}")
 
+    print("Beginning training...")
     train(num_epochs=25)
+    print("Training done.")
 
+    print("Beginning evaluation...")
     for imgs, annotations in data_loader:
         model.eval()
 
@@ -85,12 +109,14 @@ if __name__ == "__main__":
 
         predictions = model(imgs)
 
-        print("Prediction")
-        plot_image(imgs[2], predictions[2])
+        print("Saving prediction image...")
+        plot_image(imgs[2], predictions[2], save=True)
 
-        print("Target")
-        plot_image(imgs[2], annotations[2])
+        print("Saving ground truth image...")
+        plot_image(imgs[2], annotations[2], save=True)
 
         break
 
+    print("Saving model...", end="")
     save_model(model)
+    print("Done.")
