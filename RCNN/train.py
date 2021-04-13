@@ -46,8 +46,8 @@ def train(num_epochs):
 if __name__ == "__main__":
     parser = ArgumentParser()
 
-    parser.add_argument("--num-epochs", type=int, nargs=1, default=25)
-    parser.add_argument("--batch-size", type=int, nargs=1, default=4)
+    parser.add_argument("--num-epochs", type=int, default=25)
+    parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--single-eval", action="store_true", default=False)
 
     args = parser.parse_args()
