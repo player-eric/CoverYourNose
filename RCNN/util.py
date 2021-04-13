@@ -26,7 +26,7 @@ def plot_image(img_tensor, annotation, save=True):
     # Display the image
     ax.imshow(img.permute(1, 2, 0))
 
-    for box in annotation["boxes"].cpu().numpy():
+    for box in annotation["boxes"].detach().cpu().numpy():
         xmin, ymin, xmax, ymax = box
 
         # Create a Rectangle patch

@@ -12,8 +12,12 @@ from model import get_model_instance_segmentation, save_model
 def train(num_epochs):
     model_to_device(model)
 
+    params = [p for p in model.parameters() if p.requires_grad]
+    print("Trainable parameters:")
+    print(params)
+
     optimizer = torch.optim.SGD(
-        params=[p for p in model.parameters() if p.requires_grad],
+        params=params,
         lr=0.005,
         momentum=0.9,
         weight_decay=0.0005
@@ -56,6 +60,8 @@ if __name__ == "__main__":
 
     if not os.path.isdir("./output"):
         os.mkdir("./output")
+    if not os.path.isdir("./checkpoints"):
+        os.mkdir("./checkpoints")
 
     print("Instantiating dataset...", end="")
     dataset = Kaggle1Dataset(
