@@ -14,7 +14,7 @@ def train(num_epochs):
 
     params = [p for p in model.parameters()]
     trainable = [p for p in params if p.requires_grad]
-    print(f"{len(params)} of {len(trainable)} are trainable.")
+    print(f"{len(trainable)} of {len(params)} model parameters are trainable.")
 
     optimizer = torch.optim.SGD(
         params=trainable,
