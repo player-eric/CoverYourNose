@@ -41,7 +41,7 @@ class Kaggle1Dataset(object):
     def generate_target(self, image_id, file):
         with open(file) as f:
             data = f.read()
-            soup = BeautifulSoup(data, 'xml')
+            soup = BeautifulSoup(data, 'lxml')
             objects = soup.find_all('object')
 
             # Bounding boxes for objects
