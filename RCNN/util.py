@@ -1,6 +1,3 @@
-import math
-from time import time
-
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import torch
@@ -19,7 +16,7 @@ def model_to_device(model):
     model.to(device)
 
 
-def plot_image(img_tensor, annotation, prediction, save=True):
+def plot_image(session_id, img_tensor, annotation, prediction, save=True):
     fig, ax = plt.subplots(1)
     img = img_tensor.cpu().data
 
@@ -43,6 +40,6 @@ def plot_image(img_tensor, annotation, prediction, save=True):
         ax.add_patch(rect)
 
     if save:
-        plt.savefig(f"./output/{'prediction' if prediction else 'true'}_{math.floor(time())}.png")
+        plt.savefig(f"./output/{'prediction' if prediction else 'true'}_{session_id}.png")
 
     plt.show()

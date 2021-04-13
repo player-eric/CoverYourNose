@@ -1,7 +1,5 @@
 import torch
 from torchvision.models.detection import faster_rcnn, fasterrcnn_resnet50_fpn
-import math
-from time import time
 
 model_output_name = "rcnn.pt"
 num_classes = 3
@@ -18,8 +16,8 @@ def get_model_instance_segmentation():
     return model
 
 
-def save_model(model):
-    torch.save(model.state_dict(), f"./checkpoints/rcnn_{math.floor(time())}.pt")
+def save_model(model, session_id):
+    torch.save(model.state_dict(), f"./checkpoints/rcnn_{session_id}.pt")
 
 
 def load_model(model_name):

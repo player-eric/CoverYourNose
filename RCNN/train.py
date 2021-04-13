@@ -1,12 +1,14 @@
+import math
 import os
 from argparse import ArgumentParser
+from time import time
 
 import torch
 from torchvision import transforms
 
 from Kaggle1Dataset import Kaggle1Dataset
-from util import input_to_device, plot_image, model_to_device
 from model import get_model_instance_segmentation, save_model
+from util import input_to_device, plot_image, model_to_device
 
 
 def train(num_epochs):
@@ -42,9 +44,9 @@ def train(num_epochs):
 
         print(epoch_loss)
 
-        save_model(model)
-
-        print("Saved checkpoint, in place.")
+        print(f"Overwriting ./checkpoints/rcnn_{session_id}.pt with newest weights.", end="")
+        save_model(model, session_id)
+        print("Done.")
 
 
 if __name__ == "__main__":
@@ -57,6 +59,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(args)
+
+    session_id = math.floor(time())
+    print(f"Session ID: {session_id}")
 
     if not os.path.isdir("./output"):
         os.mkdir("./output")
@@ -95,16 +100,12 @@ if __name__ == "__main__":
             predictions = model(imgs)
 
             print("Saving prediction image...", end="")
-            plot_image(imgs[2], predictions[2], prediction=True, save=True)
+            plot_image(session_id, imgs[2], predictions[2], prediction=True, save=True)
             print("Done.")
 
             print("Saving ground truth image...", end="")
-            plot_image(imgs[2], annotations[2], prediction=False, save=True)
+            plot_image(session_id, imgs[2], annotations[2], prediction=False, save=True)
             print("Done.")
 
             break
         print("Evaluation done.")
-
-    print("Saving model...", end="")
-    save_model(model)
-    print("Done.")
