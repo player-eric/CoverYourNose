@@ -12,11 +12,12 @@ from model import get_model_instance_segmentation, save_model
 def train(num_epochs):
     model_to_device(model)
 
-    params = [p for p in model.parameters() if p.requires_grad]
-    print(f"{len(params)} of {len(model.parameters())} are trainable.")
+    params = [p for p in model.parameters()]
+    trainable = [p for p in params if p.requires_grad]
+    print(f"{len(params)} of {len(trainable)} are trainable.")
 
     optimizer = torch.optim.SGD(
-        params=params,
+        params=trainable,
         lr=0.005,
         momentum=0.9,
         weight_decay=0.0005
