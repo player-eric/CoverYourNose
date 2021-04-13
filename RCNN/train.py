@@ -44,7 +44,7 @@ def train(num_epochs):
 
         print(epoch_loss)
 
-        print(f"Overwriting ./checkpoints/rcnn_{session_id}.pt with newest weights.", end="")
+        print(f"Overwriting ./checkpoints/rcnn_{session_id}.pt with newest weights...", end="")
         save_model(model, session_id)
         print("Done.")
 
