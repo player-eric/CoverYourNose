@@ -20,18 +20,21 @@ def generate_target(image_id, file, classes):
         soup = BeautifulSoup(data, 'lxml')
         objects = soup.find_all('object')
 
-        boxes = []
-        labels = []
-        for i in objects:
-            boxes.append(generate_box(i))
-            labels.append(generate_label(i, classes))
+        if len(objects):
+            boxes = []
+            labels = []
+            for i in objects:
+                boxes.append(generate_box(i))
+                labels.append(generate_label(i, classes))
+            boxes = torch.as_tensor(boxes, dtype=torch.float32)
+            labels = torch.as_tensor(labels, dtype=torch.int64)
+        else:
+            boxes = torch.empty(0, 4, dtype=torch.float32)
+            labels = torch.empty(0, dtype=torch.int64)
 
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)
-        # Labels (In my case, I only one class: target class or background)
-        labels = torch.as_tensor(labels, dtype=torch.int64)
         # Tensorise img_id
         img_id = torch.tensor([image_id])
-        # Annotation is in dictionary format
+        # Output annotation in dictionary format
         return {"boxes": boxes, "labels": labels, "image_id": img_id}
 
 
