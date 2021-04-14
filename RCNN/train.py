@@ -30,6 +30,8 @@ def train(num_epochs):
 
         model.train()
 
+        start = math.floor(time())
+
         epoch_loss = 0
         for t_imgs, t_annotations in data_loader:
             t_imgs, t_annotations = input_to_device(t_imgs, t_annotations)
@@ -43,6 +45,7 @@ def train(num_epochs):
             epoch_loss += losses
 
         print(epoch_loss)
+        print(f"Epoch duration: {math.floor(time()) - start} seconds.")
 
         print(f"Overwriting ./checkpoints/rcnn_box_predictor_{session_id}.pt with newest weights...", end="")
         save_model(model, session_id)
