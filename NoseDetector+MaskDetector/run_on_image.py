@@ -16,7 +16,7 @@ colors = {
     "NoMask": (255, 0, 0)
 }
 
-use_torch = False
+use_torch = True
 
 #### imports for a CNN mask detector start ####
 #### these can be later replaced with models trained by ourselves ####
@@ -121,12 +121,12 @@ def run_on_image(image,
         # parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         # larger minNeighbors -> less false positive
         # These simple nose and eye detectors are not working perfectly, I'll try to improve them later
-        nose_positions = nose_detector(faceROI, minNeighbors=10)
+        nose_positions = nose_detector(faceROI, minNeighbors=5)
         nose_boxes = convert_to_global(
             "Nose", nose_positions, mask_box, width, height)
         mask_box.set("nose_boxes", nose_boxes)
 
-        eye_positions = eye_detector(faceROI, minNeighbors=8)
+        eye_positions = eye_detector(faceROI, minNeighbors=5)
         eye_boxes = convert_to_global(
             "Eye", eye_positions, mask_box, width, height)
         mask_box.set("eye_boxes", eye_boxes)
