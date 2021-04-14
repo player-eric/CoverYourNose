@@ -14,8 +14,19 @@ class GlobalDataset(object):
             "../Data/Kaggle1/images",
         ]
         self.annotation_dirs = [
-            #"../Data/AIZOO/train/annotations",
+            # "../Data/AIZOO/train/annotations",
             "../Data/Kaggle1/annotations",
+        ]
+        self.classes = [
+            # {
+            #     "face": 0,
+            #     "face_mask": 1,
+            # },
+            {
+                "without_mask": 0,
+                "with_mask": 1,
+                "mask_weared_incorrect": 2,
+            },
         ]
         # load all image files, sorting them to
         # ensure that they are aligned
@@ -34,18 +45,6 @@ class GlobalDataset(object):
 
             acc = 0 if not len(self.index_thresholds) else self.index_thresholds[-1]
             self.index_thresholds.append(acc + len(image_names))
-
-        self.classes = [
-            {
-                "face": 0,
-                "face_mask": 1,
-            },
-            {
-                "without_mask": 0,
-                "with_mask": 1,
-                "mask_weared_incorrect": 2,
-            },
-        ]
 
     def __getitem__(self, idx):
         i = next(x for x, t in enumerate(self.index_thresholds) if idx < t)
