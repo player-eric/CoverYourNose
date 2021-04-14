@@ -98,6 +98,7 @@ if __name__ == "__main__":
             RandomAutocontrast(0.1),
             RandomAdjustSharpness(0.8, 0.1)
         ])),
+        shuffle=True,
         batch_size=args.batch_size,
         collate_fn=collate_fn
     )

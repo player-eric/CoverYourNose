@@ -58,7 +58,7 @@ class SSD300(nn.Module):
 
         self.feature_extractor = backbone
 
-        self.label_num = 2  # binary classification: mask vs. no mask
+        self.label_num = 3  # ternary classification: mask vs. no mask vs. incorrect mask
         self._build_additional_features(self.feature_extractor.out_channels)
         self.num_defaults = [4, 6, 6, 6, 4, 4]
         self.loc = []

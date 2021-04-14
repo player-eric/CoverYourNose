@@ -2,7 +2,7 @@ import torch
 from torchvision.models.detection import faster_rcnn, fasterrcnn_resnet50_fpn
 
 
-def get_model_instance_segmentation():
+def get_faster_rcnn():
     # load an instance segmentation model pre-trained pre-trained on COCO
     model = fasterrcnn_resnet50_fpn(pretrained=True)
     # get number of input features for the classifier
@@ -18,7 +18,7 @@ def save_model(model, session_id):
 
 
 def load_model(session_id=None):
-    model = get_model_instance_segmentation()
+    model = get_faster_rcnn()
     if session_id is not None:
         model.load_state_dict(torch.load(
             f"./checkpoints/rcnn_{session_id}.pt",
