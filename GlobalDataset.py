@@ -10,11 +10,11 @@ class GlobalDataset(object):
     def __init__(self, transforms):
         self.transforms = transforms
         self.image_dirs = [
-            "../Data/AIZOO/train/images",
+            # "../Data/AIZOO/train/images",
             "../Data/Kaggle1/images",
         ]
         self.annotation_dirs = [
-            "../Data/AIZOO/train/annotations",
+            #"../Data/AIZOO/train/annotations",
             "../Data/Kaggle1/annotations",
         ]
         # load all image files, sorting them to
