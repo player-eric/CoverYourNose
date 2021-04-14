@@ -2,6 +2,7 @@ import math
 import os
 from argparse import ArgumentParser
 from time import time
+from progress.bar import FillingSquaresBar
 
 import torch
 from torchvision.transforms import Compose, ToTensor, RandomAdjustSharpness, RandomAutocontrast
@@ -9,6 +10,22 @@ from torchvision.transforms import Compose, ToTensor, RandomAdjustSharpness, Ran
 from GlobalDataset import GlobalDataset
 from model import save_model, load_model
 from util import input_to_device, model_to_device, collate_fn
+
+
+# noinspection PyShadowingNames
+class ForwardPassCounter(FillingSquaresBar):
+    suffix = '%(remaining)d | %(eta_td)s remaining'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        quota = kwargs.get("quota")
+        s = "" if quota == 1 else "s"
+        ForwardPassCounter.message = f"Processing {quota} batch{s}:"
+
+    def finish(self) -> None:
+        super().finish()
+        print("\n------------------------ Result ------------------------\n")
+        print(f"Elapsed time: {self.elapsed_td}\n")
 
 
 def train(num_epochs):
@@ -32,17 +49,20 @@ def train(num_epochs):
 
         start = math.floor(time())
 
-        epoch_loss = 0
-        for t_imgs, t_annotations in data_loader:
-            t_imgs, t_annotations = input_to_device(t_imgs, t_annotations)
+        with ForwardPassCounter(quota=len(data_loader)) as counter:
+            epoch_loss = 0
+            for t_imgs, t_annotations in data_loader:
+                t_imgs, t_annotations = input_to_device(t_imgs, t_annotations)
 
-            loss_dict = model(t_imgs, t_annotations)
-            losses = sum(loss for loss in loss_dict.values())
+                loss_dict = model(t_imgs, t_annotations)
+                losses = sum(loss for loss in loss_dict.values())
 
-            optimizer.zero_grad()
-            losses.backward()
-            optimizer.step()
-            epoch_loss += losses
+                optimizer.zero_grad()
+                losses.backward()
+                optimizer.step()
+                epoch_loss += losses
+
+                counter.next()
 
         print(epoch_loss)
         print(f"Epoch duration: {math.floor(time()) - start} seconds.")
