@@ -96,7 +96,10 @@ def bboxes_to_nms_input(bboxes):
         bboxes_numpy.append(bbox.points)
         confidences_numpy.append(bbox.get("confidence"))
 
-    return np.stack(bboxes_numpy), np.array(confidences_numpy)
+    bboxes_numpy = np.stack(bboxes_numpy) if len(bboxes_numpy) else np.array(bboxes_numpy)
+    confidences_numpy = np.array(confidences_numpy)
+
+    return bboxes_numpy, confidences_numpy
 
 
 def plot_image(image, bboxes, save_info=None):

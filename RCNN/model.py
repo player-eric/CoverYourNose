@@ -10,24 +10,18 @@ def get_model_instance_segmentation():
     # replace the pre-trained head with a new one
     model.roi_heads.box_predictor = faster_rcnn.FastRCNNPredictor(in_features, 3)
 
-    for param in model.parameters():
-        param.requires_grad = False
-
-    for param in model.roi_heads.box_predictor.parameters():
-        param.requires_grad = True
-
     return model
 
 
 def save_model(model, session_id):
-    torch.save(model.roi_heads.box_predictor.state_dict(), f"./checkpoints/rcnn_box_predictor_{session_id}.pt")
+    torch.save(model.state_dict(), f"./checkpoints/rcnn_{session_id}.pt")
 
 
 def load_model(session_id=None):
     model = get_model_instance_segmentation()
     if session_id is not None:
-        model.roi_heads.box_predictor.load_state_dict(torch.load(
-            f"./checkpoints/rcnn_box_predictor_{session_id}.pt",
+        model.load_state_dict(torch.load(
+            f"./checkpoints/rcnn_{session_id}.pt",
             map_location=None if torch.cuda.is_available() else torch.device('cpu')
         ))
     return model
