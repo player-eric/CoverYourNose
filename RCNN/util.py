@@ -10,6 +10,10 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 print(f"Device: {device}")
 
 
+def get_device():
+    return device
+
+
 def generate_target(image_id, file, classes):
     with open(file) as f:
         data = f.read()
@@ -54,24 +58,31 @@ def model_to_device(model):
     model.to(device)
 
 
-def get_bboxes(dictionaries, clip):
+def get_clips(image_tensors):
+    return np.array([tuple(t.shape[1:][::-1]) for t in image_tensors])
+
+
+def get_bbox_lists(dictionaries, clips):
     all_bboxes = []
 
-    for dict in dictionaries:
+    for dict, clip in zip(dictionaries, clips):
         boxes = dict["boxes"].detach().cpu().numpy()
         labels = dict["labels"].detach().cpu().numpy()
-        confidences = dict["scores"].detach().cpu().numpy()
+        if "scores" in dict:
+            confidences = dict["scores"].detach().cpu().numpy()
+        else:
+            confidences = [1] * len(boxes)
 
         bboxes = []
-        for [xmin, ymin, xmax, ymax], label, confidence in zip(boxes, labels, confidences):
-            bbox = bbox_from_two_points("face_mask_roi", xmin, ymin, xmax, ymax, clip)
+        for [x1, y1, x2, y2], label, confidence in zip(boxes, labels, confidences):
+            bbox = bbox_from_two_points("face_mask_roi", x1, y1, x2, y2, clip)
             bbox.set("predicted_class", label)
             bbox.set("confidence", confidence)
             bboxes.append(bbox)
 
         all_bboxes.append(bboxes)
 
-    return np.array(all_bboxes)
+    return all_bboxes
 
 
 def bboxes_to_nms_input(bboxes):
@@ -106,7 +117,11 @@ def plot_image(image, bboxes, save_info=None):
         ax.add_patch(rect)
 
     if save_info is not None:
-        session_id, is_prediction = save_info
-        plt.savefig(f"./output/{'prediction' if is_prediction else 'true'}_{session_id}.png")
+        i, session_id, is_prediction = save_info
+        plt.savefig(f"./output/{'prediction' if is_prediction else 'true'}_{session_id}_{i}.png")
 
     plt.show()
+
+
+def collate_fn(batch):
+    return tuple(zip(*batch))
