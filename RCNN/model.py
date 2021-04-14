@@ -20,7 +20,10 @@ def save_model(model, session_id):
     torch.save(model.state_dict(), f"./checkpoints/rcnn_{session_id}.pt")
 
 
-def load_model(model_name):
+def load_model(session_id):
     model = get_model_instance_segmentation()
-    model.load_state_dict(torch.load(model_name))
+    model.load_state_dict(torch.load(
+        f"./checkpoints/rcnn_{session_id}.pt",
+        map_location=None if torch.cuda.is_available() else torch.device('cpu')
+    ))
     return model

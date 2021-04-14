@@ -1,7 +1,8 @@
-from bs4 import BeautifulSoup
-import torch
 import os
+
 from PIL import Image
+
+from util import generate_target
 
 
 class Kaggle1Dataset(object):
@@ -28,7 +29,7 @@ class Kaggle1Dataset(object):
         label_path = os.path.join(self.annotation_dir, file_label)
         img = Image.open(img_path).convert("RGB")
         # Generate Label
-        target = self.generate_target(idx, label_path)
+        target = generate_target(idx, label_path, self.classes)
 
         if self.transforms is not None:
             img = self.transforms(img)
@@ -37,41 +38,6 @@ class Kaggle1Dataset(object):
 
     def __len__(self):
         return len(self.imgs)
-
-    def generate_target(self, image_id, file):
-        with open(file) as f:
-            data = f.read()
-            soup = BeautifulSoup(data, 'lxml')
-            objects = soup.find_all('object')
-
-            # Bounding boxes for objects
-            # In coco format, bbox = [xmin, ymin, width, height]
-            # In pytorch, the input should be [xmin, ymin, xmax, ymax]
-            boxes = []
-            labels = []
-            for i in objects:
-                boxes.append(self.generate_box(i))
-                labels.append(self.generate_label(i))
-
-            boxes = torch.as_tensor(boxes, dtype=torch.float32)
-            # Labels (In my case, I only one class: target class or background)
-            labels = torch.as_tensor(labels, dtype=torch.int64)
-            # Tensorise img_id
-            img_id = torch.tensor([image_id])
-            # Annotation is in dictionary format
-            return {"boxes": boxes, "labels": labels, "image_id": img_id}
-
-    @staticmethod
-    def generate_box(obj):
-        x_min = int(obj.find('xmin').text)
-        y_min = int(obj.find('ymin').text)
-        x_max = int(obj.find('xmax').text)
-        y_max = int(obj.find('ymax').text)
-
-        return [x_min, y_min, x_max, y_max]
-
-    def generate_label(self, obj):
-        return self.classes[obj.find('name').text]
 
     @staticmethod
     def collate_fn(batch):

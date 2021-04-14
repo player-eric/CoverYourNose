@@ -8,7 +8,7 @@ from torchvision import transforms
 
 from Kaggle1Dataset import Kaggle1Dataset
 from model import get_model_instance_segmentation, save_model
-from util import input_to_device, plot_image, model_to_device
+from util import input_to_device, plot_image, model_to_device, get_bboxes
 
 
 def train(num_epochs):
@@ -99,12 +99,19 @@ if __name__ == "__main__":
 
             predictions = model(imgs)
 
+            index = 2
+            imgs = imgs.cpu().data
+            eval_image = imgs[index]
+            height, width = eval_image.shape
+
             print("Saving prediction image...", end="")
-            plot_image(session_id, imgs[2], predictions[2], prediction=True, save=True)
+            bboxes = get_bboxes(predictions[index], (width, height))
+            plot_image(eval_image, bboxes, (session_id, True))
             print("Done.")
 
             print("Saving ground truth image...", end="")
-            plot_image(session_id, imgs[2], annotations[2], prediction=False, save=True)
+            bboxes = get_bboxes(annotations[index], (width, height))
+            plot_image(imgs[index], bboxes, (session_id, False))
             print("Done.")
 
             break
