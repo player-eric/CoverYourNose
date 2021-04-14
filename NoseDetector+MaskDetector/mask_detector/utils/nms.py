@@ -1,8 +1,9 @@
 # -*- encoding=utf-8
 import numpy as np
 
+
 def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_thresh=0.5, keep_top_k=-1):
-    '''
+    """
     do nms on single class.
     Hint: for the specific class, given the bbox and its confidence,
     1) sort the bbox according to the confidence from top to down, we call this a set
@@ -15,8 +16,9 @@ def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_t
     :param iou_thresh:
     :param keep_top_k:
     :return:
-    '''
-    if len(bboxes) == 0: return []
+    """
+    if len(bboxes) == 0:
+        return []
 
     conf_keep_idx = np.where(confidences > conf_thresh)[0]
 
@@ -55,5 +57,4 @@ def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_t
         idxs = np.delete(idxs, need_to_be_deleted_idx)
 
     # if the number of final bboxes is less than keep_top_k, we need to pad it.
-    # TODO
     return conf_keep_idx[pick]
