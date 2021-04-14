@@ -95,8 +95,8 @@ if __name__ == "__main__":
     data_loader = torch.utils.data.DataLoader(
         dataset=GlobalDataset(transforms=Compose([
             ToTensor(),
-            RandomAutocontrast(0.1),
-            RandomAdjustSharpness(0.8, 0.1)
+            # RandomAutocontrast(0.1),
+            # RandomAdjustSharpness(0.8, 0.1)
         ])),
         shuffle=True,
         batch_size=args.batch_size,
