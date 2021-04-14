@@ -2,3 +2,4 @@
 .idea
 Data/*
 RCNN/checkpoints/
+RCNN/Data/*
