@@ -18,14 +18,10 @@ class ForwardPassCounter(FillingSquaresBar):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        quota = kwargs.get("quota")
-        s = "" if quota == 1 else "s"
-        ForwardPassCounter.message = f"Processing {quota} batch{s}:"
 
     def finish(self) -> None:
         super().finish()
-        print("\n------------------------ Result ------------------------\n")
-        print(f"Elapsed time: {self.elapsed_td}\n")
+        print(f"Epoch time: {self.elapsed_td}\n")
 
 
 def train(num_epochs):
@@ -49,7 +45,7 @@ def train(num_epochs):
 
         start = math.floor(time())
 
-        with ForwardPassCounter(quota=len(data_loader)) as counter:
+        with ForwardPassCounter(max=len(data_loader)) as counter:
             epoch_loss = 0
             for t_imgs, t_annotations in data_loader:
                 t_imgs, t_annotations = input_to_device(t_imgs, t_annotations)
