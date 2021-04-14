@@ -5,7 +5,7 @@ from time import time
 from progress.bar import FillingSquaresBar
 
 import torch
-from torchvision.transforms import Compose, ToTensor, RandomAdjustSharpness, RandomAutocontrast
+from torchvision.transforms import Compose, ToTensor
 
 from GlobalDataset import GlobalDataset
 from model import save_model, load_model
