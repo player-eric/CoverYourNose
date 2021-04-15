@@ -165,7 +165,7 @@ def train():
             adjust_learning_rate(optimizer, args.gamma, step_index)
 
         # load train data
-        images, targets = next(batch_iterator)
+        #images, targets = next(batch_iterator)
         try:
             images, targets = next(batch_iterator)
         except StopIteration:
