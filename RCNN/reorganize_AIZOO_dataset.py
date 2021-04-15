@@ -1,4 +1,4 @@
-# script to reorganize AIZZO dataset
+# script for reorganizing AIZZO dataset
 '''
 -AIZOO                       -AIZOO
     -train                      -train
