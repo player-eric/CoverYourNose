@@ -64,7 +64,8 @@ def test_net(save_folder, net, cuda, testset, transform, thresh):
         pred_num = 0
         for i in range(detections.size(1)):
             j = 0
-            while detections[0, i, j, 0] >= 0.2:
+            print(img_id, detections[0, i, j, 0])
+            while detections[0, i, j, 0] >= 0.15:
                 if pred_num == 0:
                     with open(filename, mode='a') as f:
                         f.write('PREDICTIONS: '+'\n')
@@ -79,9 +80,9 @@ def test_net(save_folder, net, cuda, testset, transform, thresh):
                 j += 1
 
                 # draw box on image
-                # print("./BigMaskDataset/val/JPEGImages/"+img_id+".jpg")
+                print("./BigMaskDataset/selfie/JPEGImages/"+img_id+".jpg")
                 image = cv2.imread(
-                    "./BigMaskDataset/val/JPEGImages/" + img_id + ".jpg")
+                    "./BigMaskDataset/selfie/JPEGImages/" + img_id + ".JPG")
 
                 xmin = max(0, int(pt[0]))
                 ymin = max(0, int(pt[1]))
@@ -111,7 +112,7 @@ def test_voc():
     print('Finished loading model!')
     # load data
     testset = VOCDetection(
-        args.voc_root, [('val', 'val')], None, VOCAnnotationTransform())
+        args.voc_root, [('selfie', 'val')], None, VOCAnnotationTransform())
     if args.cuda:
         net = net.cuda()
         cudnn.benchmark = True
