@@ -3,3 +3,9 @@
 Data/*
 RCNN/checkpoints/
 RCNN/Data/*
+SSDPyTorch/eval/*
+SSDPyTorch/conf0.2/*
+__pycache__
+SSDPyTorch/weights/*
+SSDPyTorch/BigMaskDataset/val/*
+SSDPyTorch/BigMaskDataset/train/*

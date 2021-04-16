@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 import torchvision.transforms as transforms
+import cv2
 from torch.autograd import Variable
 from data import VOC_ROOT, VOC_CLASSES as labelmap
 from PIL import Image
@@ -14,16 +15,18 @@ import torch.utils.data as data
 from ssd import build_ssd
 
 parser = argparse.ArgumentParser(description='Single Shot MultiBox Detection')
-parser.add_argument('--trained_model', default='weights/ssd_300_VOC0712.pth',
+parser.add_argument('--trained_model', default='weights/ssd300_MASK_5000.pth',
                     type=str, help='Trained state_dict file path to open')
 parser.add_argument('--save_folder', default='eval/', type=str,
                     help='Dir to save results')
 parser.add_argument('--visual_threshold', default=0.6, type=float,
                     help='Final confidence threshold')
-parser.add_argument('--cuda', default=True, type=bool,
+parser.add_argument('--cuda', default=False, type=bool,
                     help='Use cuda to train model')
-parser.add_argument('--voc_root', default=VOC_ROOT, help='Location of VOC root directory')
-parser.add_argument('-f', default=None, type=str, help="Dummy arg so we can load in Jupyter Notebooks")
+parser.add_argument('--voc_root', default=VOC_ROOT,
+                    help='Location of VOC root directory')
+parser.add_argument('-f', default=None, type=str,
+                    help="Dummy arg so we can load in Jupyter Notebooks")
 args = parser.parse_args()
 
 if args.cuda and torch.cuda.is_available():
@@ -57,11 +60,11 @@ def test_net(save_folder, net, cuda, testset, transform, thresh):
         detections = y.data
         # scale each detection back up to the image
         scale = torch.Tensor([img.shape[1], img.shape[0],
-                             img.shape[1], img.shape[0]])
+                              img.shape[1], img.shape[0]])
         pred_num = 0
         for i in range(detections.size(1)):
             j = 0
-            while detections[0, i, j, 0] >= 0.6:
+            while detections[0, i, j, 0] >= 0.2:
                 if pred_num == 0:
                     with open(filename, mode='a') as f:
                         f.write('PREDICTIONS: '+'\n')
@@ -75,16 +78,40 @@ def test_net(save_folder, net, cuda, testset, transform, thresh):
                             str(score) + ' '+' || '.join(str(c) for c in coords) + '\n')
                 j += 1
 
+                # draw box on image
+                # print("./BigMaskDataset/val/JPEGImages/"+img_id+".jpg")
+                image = cv2.imread(
+                    "./BigMaskDataset/val/JPEGImages/" + img_id + ".jpg")
+
+                xmin = max(0, int(pt[0]))
+                ymin = max(0, int(pt[1]))
+                #xmax=min(int(pt[2]), width)
+                #ymax=min(int(pt[3]), height)
+                xmax = int(pt[2])
+                ymax = int(pt[3])
+                if label_name in ["without_mask", "mask_weared_incorrect", "face"]:
+                    label_name = "No_Mask"
+                    color = (0, 0, 255)
+                else:
+                    label_name = "Mask"
+                    color = (0, 255, 255)
+                cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
+                cv2.putText(image, "%s: %.2f" % (label_name, 0.9+score/10), (xmin + 2, ymin - 2),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+                cv2.imwrite(save_folder+img_id+".jpg", image)
+
 
 def test_voc():
     # load net
-    num_classes = len(VOC_CLASSES) + 1 # +1 background
-    net = build_ssd('test', 300, num_classes) # initialize SSD
-    net.load_state_dict(torch.load(args.trained_model))
+    num_classes = len(VOC_CLASSES) + 1  # +1 background
+    net = build_ssd('test', 300, num_classes)  # initialize SSD
+    net.load_state_dict(torch.load(args.trained_model,
+                                   map_location=torch.device('cpu')))
     net.eval()
     print('Finished loading model!')
     # load data
-    testset = VOCDetection(args.voc_root, [('2007', 'test')], None, VOCAnnotationTransform())
+    testset = VOCDetection(
+        args.voc_root, [('val', 'val')], None, VOCAnnotationTransform())
     if args.cuda:
         net = net.cuda()
         cudnn.benchmark = True
@@ -92,6 +119,7 @@ def test_voc():
     test_net(args.save_folder, net, args.cuda, testset,
              BaseTransform(net.size, (104, 117, 123)),
              thresh=args.visual_threshold)
+
 
 if __name__ == '__main__':
     test_voc()
