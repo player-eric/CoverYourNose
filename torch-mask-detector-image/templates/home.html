@@ -1,0 +1,16 @@
+<!doctype html>
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="container">
+    {% block image %}
+    {% endblock %}
+    <!-- <img class="result-image"
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAABdklEQVR4nO2VoY7CQBRF5w4dDGlQKBCQVJCQVKIJv4ACieEPEPxBE0QNwZBg0NVIPJ+AAIckpA5S7orZTJrdbunSriDZ6+Zl3pn3Zu7MAIAoWrJw4j/0T6BW2oJSdjqder3e7/d3u912u308HlmgSLRUtVq9XC7JszNYMLn98/kshAiCoN1uO44jpZxMJkKIKIqyVPq5+BeNRiOSp9MpHvR9n+RwOExMiSsZCiAMQ5Lz+dxEyuUyycVi8ToUwPV6Jel5nh4qpUhuNptcUCklSZJhGAJwXZfker3OBQUghFitVhp9v99J2radF6rV6/U0N4oi13ULgCqldI2m5EajkQtqWZYGzWYzALVajeTtdvvJi5mgh8OB5GAwMJHpdEqyUqmkZKU9KFJKx3GOx2MQBCZo27Yu89c3Kt678SmA8Xisd+P19o1Pl8ulMQDJZrOZkvUECqDVajGm/X5fKpXSU55DASilut2u53nph/MNXLTe5496H+gHKHq/f+8txmIAAAAASUVORK5CYII="> -->
+    <img id="result-image" src="static/logo.png">
+    <p id="upload-label">Please upload an image</p>
+
+    <input type="file" accept="image/*" id="imageUpload">
+    <label for="imageUpload"><i class="fas fa-camera" id="imageupload-icon"></i></label>
+</div>
+{% endblock %}

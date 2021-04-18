@@ -10,3 +10,5 @@ SSDPyTorch/weights/*
 SSDPyTorch/BigMaskDataset/val/*
 SSDPyTorch/BigMaskDataset/train/*
 SSDPyTorch/BigMaskDataset/selfie/*
+.vscode
+torch-mask-detector-image/tmp/*
