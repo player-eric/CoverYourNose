@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+
+    <head>
+        <title>Cover Your Nose</title>
+        <meta charset="utf-8">
+        <meta name="description" content={{description}}>
+        <link rel="shortcut icon" href="static/logo.png">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta2/js/bootstrap.min.js"
+            integrity="sha512-7PEMaoHJNQoEqpxgkKskoXpEglioEnKlfCMcYVmml8yJjmBG7twaBmnI+PLU0cNTw2VWhizJYUG1kmSzRDo1tw=="
+            crossorigin="anonymous"></script>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta2/css/bootstrap.min.css"
+            integrity="sha512-aqT9YD5gLuLBr6ipQAS+72o5yHKzgZbGxEh6iY8lW/r6gG14e2kBTAJb8XrxzZrMOgSmDqtLaF76T0Z6YY2IHg=="
+            crossorigin="anonymous" />
+        <script src="https://kit.fontawesome.com/9b0cecab0c.js" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="static/style.css">
+        <script src="static/utils.js"></script>
+    </head>
+
+    <body>
+        <p id="headline-1">Cover Your Nose</p>
+        <p id="headline-2">A website checking if you are wearing a mask properly. But just a MNIST classifier for now :(
+        </p>
+        {% block body %}
+        {% endblock %}
+    </body>
+
+    <script>
+        document.querySelector('#imageUpload').addEventListener('change', event => {
+            handleImageUpload(event)
+        })
+    </script>
+
+</html>
