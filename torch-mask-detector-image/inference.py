@@ -101,7 +101,7 @@ def run_on_image(image,
         #### START get potential nose and eye positions ####
         # parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         # larger minNeighbors -> less false positive
-        nose_positions = nose_detector(faceROI, minNeighbors=14)
+        nose_positions = nose_detector(faceROI, minNeighbors=10)
         nose_boxes = convert_to_global(
             "Nose", nose_positions, mask_box, width, height)
         mask_box.set("nose_boxes", nose_boxes)
@@ -113,6 +113,7 @@ def run_on_image(image,
         #### END get potential nose and eye positions ####
     #### END convert mask bbox, find internal nose and eye bboxes ####
 
+    message = "No face detected."
     for mask_box in mask_boxes:
         #### START process eyes ####
         eye_boxes = mask_box.get("eye_boxes")
@@ -130,7 +131,7 @@ def run_on_image(image,
         for n_box in nose_boxes:
             nose_y = n_box.center[1]
             if nose_y > eye_y:
-                print("nose_y:", nose_y, "eye_y:", eye_y)
+                # print("nose_y:", nose_y, "eye_y:", eye_y)
                 validated_noses += 1
                 image = cv2.ellipse(image, n_box.center,
                                     n_box.halves, 0, 0, 360,
