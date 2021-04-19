@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import base64
+import shutil
 
 from flask import Flask, request
 from flask import current_app as app
@@ -35,15 +36,12 @@ def get_prediction():
         image.save(fn)
 
         image = load_image(fn)
-        # res, preprocessed_image = inference(image)
-
-        # preprocessed_image = Image.fromarray(
-        #     np.uint8(preprocessed_image * 255)).convert('RGB')
         res_image, res = run_on_image(image)
         res_image = Image.fromarray(np.uint8(res_image)).convert('RGB')
         buffer = BytesIO()
         res_image.save(buffer, format="PNG")
         return_image = buffer.getvalue()
+        os.remove(fn)
         return jsonify(message=res, image=str(base64.b64encode(return_image))[2:-1])
 
 

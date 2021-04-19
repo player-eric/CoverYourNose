@@ -101,7 +101,7 @@ def run_on_image(image,
         #### START get potential nose and eye positions ####
         # parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         # larger minNeighbors -> less false positive
-        nose_positions = nose_detector(faceROI, minNeighbors=14)
+        nose_positions = nose_detector(faceROI, minNeighbors=10)
         nose_boxes = convert_to_global(
             "Nose", nose_positions, mask_box, width, height)
         mask_box.set("nose_boxes", nose_boxes)
