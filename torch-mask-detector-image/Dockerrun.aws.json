@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "yanshiqin1998/tf-mnist-classifier",
+    "Name": "yanshiqin1998/torch-mask-detector-debug",
     "Update": "true"
   },
   "Ports": [
