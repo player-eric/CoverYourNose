@@ -106,7 +106,7 @@ def run_on_image(image,
             "Nose", nose_positions, mask_box, width, height)
         mask_box.set("nose_boxes", nose_boxes)
 
-        eye_positions = eye_detector(faceROI, minNeighbors=5)
+        eye_positions = eye_detector(faceROI, minNeighbors=2)
         eye_boxes = convert_to_global(
             "Eye", eye_positions, mask_box, width, height)
         mask_box.set("eye_boxes", eye_boxes)
@@ -126,19 +126,22 @@ def run_on_image(image,
 
         #### START process noses ####
         nose_boxes = mask_box.get("nose_boxes")
-        validated_noses = 0
+        largest_nose_box = max(
+            nose_boxes, key=lambda nose_box: nose_box.width*nose_box.height) if len(nose_boxes) else None
 
-        for n_box in nose_boxes:
-            nose_y = n_box.center[1]
-            if nose_y > eye_y:
-                # print("nose_y:", nose_y, "eye_y:", eye_y)
-                validated_noses += 1
-                image = cv2.ellipse(image, n_box.center,
-                                    n_box.halves, 0, 0, 360,
+        if largest_nose_box and class_id == 0:
+            largest_nose_y = largest_nose_box.center[1]
+            if largest_nose_y > eye_y:
+                nose_detected = True
+                image = cv2.ellipse(image, largest_nose_box.center,
+                                    largest_nose_box.halves, 0, 0, 360,
                                     (0, 0, 0), 10)
-                cv2.putText(image, "Nose", (n_box.x1 + 2, n_box.y1 - 2),
+                cv2.putText(image, "Nose", (largest_nose_box.x1 + 2, largest_nose_box.y1 - 2),
                             cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 5)
-        #### END process noses ####
+            else:
+                nose_detected = False
+        else:
+            nose_detected = False
 
         #### START draw mask boundaries ####
         class_id = mask_box.get("class_id")
@@ -148,7 +151,7 @@ def run_on_image(image,
             color = colors["NoMask"]
             message = "Please wear a mask!"
             text = "No Mask"
-        elif validated_noses > 0:
+        elif nose_detected:
             color = colors["Exposed"]
             message = "Please cover you nose."
             text = "Nose Detected"
