@@ -36,12 +36,15 @@ def get_prediction():
         image.save(fn)
 
         image = load_image(fn)
+        os.remove(fn)
         res_image, res = run_on_image(image)
         res_image = Image.fromarray(np.uint8(res_image)).convert('RGB')
+        image_height_over_width = res_image.size[1] / res_image.size[0]
+        res_image = res_image.resize((500, int(image_height_over_width * 500)))
         buffer = BytesIO()
         res_image.save(buffer, format="PNG")
         return_image = buffer.getvalue()
-        os.remove(fn)
+
         return jsonify(message=res, image=str(base64.b64encode(return_image))[2:-1])
 
 
