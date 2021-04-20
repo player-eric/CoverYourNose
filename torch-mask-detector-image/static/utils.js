@@ -12,7 +12,6 @@ const handleImageUpload = (event) => {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			console.log(data);
 			document.getElementById("result-image").src =
 				base64Prefix + data.image;
 			document.getElementById("upload-label").innerHTML = data.message;
