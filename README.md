@@ -21,10 +21,9 @@ Three different models mask detection: [Faster R-CNN](https://arxiv.org/abs/1506
 
 ### Nose+MaskDetector
 
-Ensemble of a HAAR-based nose detector an a pretrained SSD mask detector
+Ensemble of a HAAR-based nose detector an a pretrained SSD model for mask detection.
 
-The pretrained CNN comes from [AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection).
-The local copy of the model can be found [here](NoseDetector+MaskDetector/MainModel.py).
+A local copy of the architecture of this model can be found [here](NoseDetector+MaskDetector/MainModel.py).
 
 ### FlaskServers
 
@@ -33,5 +32,7 @@ A Flask server application with Nose+MaskDetector running on the backend, ready 
 ## References
 
 [AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection)
+
 [Pytorch - FasterRCNN](https://www.kaggle.com/daniel601/pytorch-fasterrcnn)
+
 [amdegroot/ssd.pytorch](https://github.com/amdegroot/ssd.pytorch)
