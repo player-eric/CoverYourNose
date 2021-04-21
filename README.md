@@ -7,7 +7,7 @@ A group project for [CSCI 1430 Introduction to Computer Vision, Spring 2021](htt
 Despite the significant vaccination process, people will still need to wear
 masks for a long time when they are outdoors. Yet currently many people are not wearing masks in proper ways, and most of them are unconscious of this. So in this project, a web app with a ML backend is developed to help people check if they are wearing masks correctly.
 
-Visit the app [here](www.coveryournose.xyz).
+Visit the app [here](http://coveryournose.xyz/).
 
 ## File structure
 
