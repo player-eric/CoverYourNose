@@ -1,17 +1,20 @@
 <!doctype html>
 {% extends 'layout.html' %}
-
+<link rel="stylesheet" href="static/style.css">
 {% block body %}
 <div class="container">
-    <p id="headline-1">Cover Your Nose</p>
-    <p id="headline-2">A website checking if you are wearing a mask properly.
-    </p>
+    <div id="headline-1">Cover Your Nose</div>
+    <div id="headline-2">A website checking if you are wearing a mask properly.</div>
+    <div id ="redirect">
+    <p id = "headline-3"> Do you know how to wear a mask correctly? </p>
     <a href="https://www.olmmed.org/covid-19-information/how-to-wear-a-mask/#:~:text=For%20the%20mask%20to%20be,tightly%20against%20the%20face."
         target="_blank" rel="noopener noreferrer">
-        How to correctly wear a mask?</a>
+        Click here to find out!</a></div>
     {% block image %}
     {% endblock %}
-    <img id="result-image" src="static/logo.png">
+    <div class="frame">
+        <img id="result-image" src="static/logo.png">
+    </div>
     <p id="upload-label">Please upload a mug shot</p>
 
     <input type="file" accept="image/*" id="imageUpload">
