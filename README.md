@@ -1,24 +1,37 @@
-# cs1430-final-project
+# Cover Your Nose
 
-## Nose+Eyes+FaceDetector
+A group project for [CSCI 1430 Introduction to Computer Vision, Spring 2021](https://browncsci1430.github.io/webpage/index.html)
+
+## Introduction
+
+Despite the significant vaccination process, people will still need to wear
+masks for a long time when they are outdoors. Yet currently many people are not wearing masks in proper ways, and most of them are unconscious of this. So in this project, a web app with a ML backend is developed to help people check if they are wearing masks correctly.
+
+Visit the app [here](www.coveryournose.xyz).
+
+## File structure
+
+### HAAR-Nose+Eyes+FaceDetectors
 
 A collection of HAAR cascade classifiers and scripts to run them.
 
+### MaskDetectorModels
 
-## NoseDetector+MaskDetector
+Three different models mask detection: [Faster R-CNN](https://arxiv.org/abs/1506.01497), [SSD](https://arxiv.org/abs/1512.02325), and [Mobilenet](https://arxiv.org/abs/1704.04861).
 
-A simple but working script for ensembling a HAAR-based nose detector + a CNN-based mask detector
+### Nose+MaskDetector
 
-The pretrained CNN comes from [AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection). It's super light weight (only 1M params). This is a great architecture we can refer to.
+Ensemble of a HAAR-based nose detector an a pretrained SSD mask detector
+
+The pretrained CNN comes from [AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection).
 The local copy of the model can be found [here](NoseDetector+MaskDetector/MainModel.py).
 
-May also consider [this tutorial](https://www.pyimagesearch.com/2017/04/10/detect-eyes-nose-lips-jaw-dlib-opencv-python/)
-as an alternative to HAAR.
+### FlaskServers
 
-## SSDMaskDetector
+A Flask server application with Nose+MaskDetector running on the backend, ready to deploy to cloud with Docker. And a tensorflow MNIST classifer server for rapid prototyping.
 
-eval_backbone.py is a working version of this [tutorial](https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/). This is more heavyweight, and would likely need to be served, rather than deployed in the client. I think we could tweak this [model source file](SSDMaskDetector/SSD300.py) and retrain on our datasets. 
+## References
 
-## TrainingPipeline
-
-A basic training pipeline for our mask detector. This was made by adding new tasks (e.g. mobileNet) to code from Proj4.
+[AIZOOTech/FaceMaskDetection](https://github.com/AIZOOTech/FaceMaskDetection)
+[Pytorch - FasterRCNN](https://www.kaggle.com/daniel601/pytorch-fasterrcnn)
+[amdegroot/ssd.pytorch](https://github.com/amdegroot/ssd.pytorch)
