@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import base64
-import shutil
 
 from flask import Flask, request
 from flask import current_app as app
@@ -50,5 +49,5 @@ def get_prediction():
 
 if __name__ == '__main__':
     model = None
-    load_model('model')
+    load_model('mask_detector/models/model360.pth')
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

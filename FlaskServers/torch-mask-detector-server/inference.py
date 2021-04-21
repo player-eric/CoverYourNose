@@ -8,6 +8,8 @@ import numpy as np
 import cv2
 from nose_detector.simple_nose_detector import nose_detector
 
+global model
+
 
 def load_image(image_path):
     img = cv2.imread(image_path)
@@ -17,7 +19,7 @@ def load_image(image_path):
 
 def load_model(model_path):
     global model
-    model = load_torch_model('mask_detector/models/model360.pth')
+    model = load_torch_model(model_path)
 
 
 def run_on_image(image,
@@ -29,7 +31,6 @@ def run_on_image(image,
     :param image: 3D numpy array of image
     :param conf_thresh: the min threshold of classification probability.
     :param iou_thresh: the IOU threshold of NMS
-    :param draw_result: whether to draw bounding box to the image.
     # :param show_result: whether to display the image.
     :return:
     """
@@ -49,8 +50,6 @@ def run_on_image(image,
     # generate anchors
     anchors = generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios)
     anchors_exp = np.expand_dims(anchors, axis=0)
-
-    id2class = {0: 'Mask', 1: 'NoMask'}
 
     #### START mask detector inference ####
     height, width, _ = image.shape
@@ -129,6 +128,10 @@ def run_on_image(image,
         largest_nose_box = max(
             nose_boxes, key=lambda nose_box: nose_box.width*nose_box.height) if len(nose_boxes) else None
 
+        class_id = mask_box.get("class_id")
+        conf = mask_box.get("conf")
+
+        #### START analyze / draw nose presence ####
         if largest_nose_box and class_id == 0:
             largest_nose_y = largest_nose_box.center[1]
             if largest_nose_y > eye_y:
@@ -142,11 +145,9 @@ def run_on_image(image,
                 nose_detected = False
         else:
             nose_detected = False
+        #### END analyze / draw nose presence ####
 
         #### START draw mask boundaries ####
-        class_id = mask_box.get("class_id")
-        conf = mask_box.get("conf")
-
         if class_id == 1:
             color = colors["NoMask"]
             message = "Please wear a mask!"
@@ -157,7 +158,7 @@ def run_on_image(image,
             text = "Nose Detected"
         else:
             color = colors["Mask"]
-            message = "You are wearing mask proplerly!"
+            message = "You are wearing mask properly!"
             text = "Mask"
 
         cv2.rectangle(image, mask_box.top_left,
