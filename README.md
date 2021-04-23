@@ -5,11 +5,15 @@ A group project for [CSCI 1430 Introduction to Computer Vision, Spring 2021](htt
 ## Introduction
 
 Despite the significant vaccination process, people will still need to wear
-masks for a long time when they are outdoors. Yet currently many people are not wearing masks in proper ways, and most of them are unconscious of this. So in this project, a web app with a ML backend is developed to help people check if they are wearing masks correctly.
+masks for a long time when they are outdoors. Yet currently many people are not wearing masks in proper ways, and most of them are unconscious of this. So in this project, a web app with CV models running on backend is developed to help people check if they are wearing masks correctly.
 
 Visit the app at [coveryournose.xyz](http://coveryournose.xyz/).
 
-## File structure
+## Code structure
+
+### Dataset
+
+Scripts for downloading the big mask / no mask dataset we created.
 
 ### HAAR-Nose+Eyes+FaceDetectors
 
