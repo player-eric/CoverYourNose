@@ -100,7 +100,7 @@ def run_on_image(image,
         #### START get potential nose and eye positions ####
         # parameter minNeighbors decides how many neighbors each candidate rectangle should have to retain it
         # larger minNeighbors -> less false positive
-        nose_positions = nose_detector(faceROI, minNeighbors=10)
+        nose_positions = nose_detector(faceROI, minNeighbors=2)
         nose_boxes = convert_to_global(
             "Nose", nose_positions, mask_box, width, height)
         mask_box.set("nose_boxes", nose_boxes)
@@ -111,6 +111,31 @@ def run_on_image(image,
         mask_box.set("eye_boxes", eye_boxes)
         #### END get potential nose and eye positions ####
     #### END convert mask bbox, find internal nose and eye bboxes ####
+    # print(eye_boxes)
+    for nose_box in nose_boxes:
+        print(nose_box.center)
+        if nose_box.center[0] != 251:
+            image = cv2.ellipse(image, nose_box.center,
+                                nose_box.halves, 0, 0, 360,
+                                (0, 255, 0), 2)
+            cv2.putText(image, "Nose", (nose_box.x1 + 2, nose_box.y1 - 2),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+        else:
+            print(nose_box.halves)
+
+            image = cv2.ellipse(image, nose_box.center,
+                                (nose_box.halves[0]-8,
+                                 nose_box.halves[1]-8), 0, 0, 360,
+                                (0, 255, 0), 2)
+            cv2.putText(image, "Nose", (nose_box.x1 + 2, nose_box.y1 - 2),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+
+    for eye_box in eye_boxes:
+        image = cv2.ellipse(image, eye_box.center,
+                            eye_box.halves, 0, 0, 360,
+                            (255, 0, 0), 2)
+        cv2.putText(image, "Eye", (eye_box.x1 + 2, eye_box.y1 - 2),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
 
     message = "No face detected."
     for mask_box in mask_boxes:
@@ -138,9 +163,9 @@ def run_on_image(image,
                 nose_detected = True
                 image = cv2.ellipse(image, largest_nose_box.center,
                                     largest_nose_box.halves, 0, 0, 360,
-                                    (0, 0, 0), 10)
+                                    (0, 0, 0), 2)
                 cv2.putText(image, "Nose", (largest_nose_box.x1 + 2, largest_nose_box.y1 - 2),
-                            cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 5)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
             else:
                 nose_detected = False
         else:
@@ -162,9 +187,9 @@ def run_on_image(image,
             text = "Mask"
 
         cv2.rectangle(image, mask_box.top_left,
-                      mask_box.bottom_right, color, 10)
+                      mask_box.bottom_right, color, 2)
         cv2.putText(image, "%s: %.2f" % (text, conf), (mask_box.x1 + 2, mask_box.y1 - 2),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, color, 5)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
         #### END draw mask boundaries ####
 
     return image, message

@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "yanshiqin1998/torch-mask-detector-final",
+    "Name": "yanshiqin1998/torch-mask-detector-server",
     "Update": "true"
   },
   "Ports": [

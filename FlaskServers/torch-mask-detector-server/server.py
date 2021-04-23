@@ -39,7 +39,7 @@ def get_prediction():
         res_image, res = run_on_image(image)
         res_image = Image.fromarray(np.uint8(res_image)).convert('RGB')
         image_height_over_width = res_image.size[1] / res_image.size[0]
-        res_image = res_image.resize((500, int(image_height_over_width * 500)))
+        #res_image = res_image.resize((260, int(image_height_over_width * 260)))
         buffer = BytesIO()
         res_image.save(buffer, format="PNG")
         return_image = buffer.getvalue()
