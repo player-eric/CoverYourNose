@@ -35,7 +35,7 @@ A local copy of the architecture of this model can be found [here](NoseDetector+
 
 ### FlaskServers
 
-A Flask server application with Nose+MaskDetector running on the backend, ready to deploy to cloud with Docker. And a tensorflow MNIST classifer server for rapid prototyping.
+A Flask server application with Nose+MaskDetector running on the backend, ready to deploy to cloud with Docker. Together with a tensorflow MNIST classifer server for rapid prototyping.
 
 ## References
 
