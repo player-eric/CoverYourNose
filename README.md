@@ -1,6 +1,10 @@
 # Cover Your Nose
 
+
 A group project for [CSCI 1430 Introduction to Computer Vision, Spring 2021](https://browncsci1430.github.io/webpage/index.html)
+
+<p align="center"><img src="/AppOverview/AppOverview1.jpeg" align="center" width="512" height="384" align="center" /></p>
+
 
 ## Introduction
 
